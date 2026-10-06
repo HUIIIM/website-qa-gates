@@ -1,0 +1,167 @@
+# vertciti Website Scorecard v1.0
+# 机器可读评分卡：以《网站卓越标准 v1.0》(D393) 六维为底座，
+# 扩展维度（视觉工艺/动效质量/AI可读性/无障碍/转化链路）映射进六维，
+# 不另起一套打架。
+# 消费方式：每日轮次 cron 打分、CI 门禁、自动化立案。
+# 版本：v1.0 (2026-10-02) · 已生效
+
+scorecard:
+  name: vertciti-website-scorecard
+  version: v1.0
+  date: 2026-10-02
+  base_standard: deliverables/website-excellence-standard-v1-2026-09-29.md
+  dimension_mapping_note: >
+    扩展维度全部映射进卓越标准六维：visual_craft + motion_quality -> 维一；
+    conversion_funnel -> 维二；ai_readability -> 维四；accessibility -> 维五。
+  total_weight: 100
+  scoring_formula: total = sum(dimension.score * dimension.weight) / 100
+  dimension_scoring_formula: dimension.score = sum(check.points_earned)  # checks 满分 100
+  grades:
+    S: { min: 95, label: 卓越 }
+    A_plus_plus: { min: 90, label: 优秀 }
+    A: { min: 85, label: 良好 }
+    B: { min: 70, label: 达标 }
+    C: { min: 0, label: 不达标 }
+  auto_file_rule:
+    # 每日轮次自动打分后触发自动立案进建议池
+    total_below: 85          # 总分 < A 自动立案
+    dimension_below: 70      # 任一维度 < 70 自动立案
+    any_gate_fail: true      # 任一发布门禁 FAIL 自动立案(P0)
+  filing_priority:
+    gate_fail: P0
+    total_below_70: P0
+    dimension_below_70: P1
+    total_below_85: P1
+    check_fail_only: P2
+
+dimensions:
+  - id: real_browser_evidence
+    base_dimension: 维一
+    name_zh: 真浏览器实证
+    weight: 18
+    scorer: human      # 真机渲染需人工/浏览器任务目检，不许硬过
+    evidence: [截图/录屏留痕, 复验记录]
+    checks:
+      - { id: desktop_render_pass, points: 40, desc: "桌面端真浏览器渲染(生产 CSP)", pass_if: "#app 非空, 无 Refused to execute inline script" }
+      - { id: mobile_390_render_pass, points: 30, desc: "390px 移动端真浏览器渲染", pass_if: "无横滚, 布局完整" }
+      - { id: console_zero_errors, points: 15, desc: "控制台零错误零警告", pass_if: "error=0, warning=0" }
+      - { id: footer_390_contrast, points: 15, desc: 390px 页脚逐项(对比度>=4.5:1, 胶囊可读), pass_if: "取色器实测达标" }
+
+  - id: visual_craft
+    base_dimension: 维一
+    name_zh: 视觉工艺
+    weight: 12
+    scorer: human
+    evidence: [全尺寸目检记录, 像素级对齐抽查]
+    checks:
+      - { id: typography_alignment, points: 30, desc: "排印/对齐/字阶/行高(按设计哲学原则五字阶表)", pass_if: "H/V/P 抽查通过" }
+      - { id: honoring_materials, points: 40, desc: 诚实材质一致(徽章覆盖率100%, 线型/色板与状态一致), pass_if: "20 个徽章抽查一致率 100%" }
+      - { id: no_unverified_display_type, points: 30, desc: "无来源形容词大字/无纯装饰插画", pass_if: "删除清单检查通过" }
+
+  - id: motion_quality
+    base_dimension: 维一
+    name_zh: 动效质量
+    weight: 7
+    scorer: script
+    script: qa-gates/motif-grep-check.sh
+    checks:
+      - { id: no_count_up, points: 25, desc: "count-up 数字动画 = 0", pass_if: "源码扫描 countUp/animate-number=0" }
+      - { id: motion_physicalized, points: 40, desc: "保留动效全部物理化且有审计记录(D182)", pass_if: "装饰性动效=0, 审计记录齐" }
+      - { id: reduced_motion_respected, points: 35, desc: "prefers-reduced-motion 下禁用/静态替代", pass_if: "媒体查询覆盖全部动效" }
+
+  - id: cta_closure
+    base_dimension: 维二
+    name_zh: 全 CTA 链路闭环
+    weight: 12
+    scorer: human
+    evidence: [链路抽查记录]
+    checks:
+      - { id: all_cta_lead_somewhere, points: 50, desc: 每个 CTA 点进去确认通向哪里, 无死路 CTA, pass_if: "全 CTA 抽查通过" }
+      - { id: clipboard_cta_actual_content, points: 25, desc: "剪贴板类 CTA 实际写入内容实测", pass_if: "payload 与链路下一步一致" }
+      - { id: mailto_reachable, points: 25, desc: "mailto:contact@vertciti.com 全站可达", pass_if: "页脚/创始人页/合规区可点, 收件人正确" }
+
+  - id: conversion_funnel
+    base_dimension: 维二
+    name_zh: 转化链路
+    weight: 8
+    scorer: human
+    checks:
+      - { id: key_paths_complete, points: 50, desc: "关键路径完整(首页->资料中心/路线图/演示->证据链三层)", pass_if: "L1/L2/L3 走通" }
+      - { id: no_dead_end_pages, points: 30, desc: "无死胡同页面(每页有明确下一步)", pass_if: "全页走查" }
+      - { id: navigation_consistency, points: 20, desc: "hash 路由导航一致(语言切换保路由)", pass_if: "抽查 5 页" }
+
+  - id: performance
+    base_dimension: 维三
+    name_zh: 性能预算
+    weight: 12
+    scorer: script
+    script: qa-gates/size-gate.sh
+    checks:
+      - { id: lcp_le_2_5s, points: 30, desc: "LCP <= 2.5s", pass_if: "真机 Lighthouse" }
+      - { id: cls_le_0_1, points: 25, desc: "CLS <= 0.1", pass_if: "真机 Lighthouse" }
+      - { id: inp_le_200ms, points: 20, desc: "INP <= 200ms", pass_if: "真机 Lighthouse" }
+      - { id: mobile_first_screen_le_1_5mb, points: 25, desc: "移动端首屏 <= 1.5MB", pass_if: "size-gate 通过" }
+
+  - id: seo_full
+    base_dimension: 维四
+    name_zh: SEO 全
+    weight: 8
+    scorer: script
+    checks:
+      - { id: og_tags_complete, points: 25, desc: OG 标签齐全(og:title/description/image, twitter:image, summary_large_image), pass_if: "源码+线上抓取" }
+      - { id: sitemap_all_pages, points: 25, desc: sitemap 与站内页面一一对应, 无死链, pass_if: "sitemap 逐项 200" }
+      - { id: jsonld_complete, points: 25, desc: "JSON-LD: Organization + Person(Jiahui Miao", 3GPP CT3/NYU/founder), pass_if: "合法 JSON-LD, 口径标准" }
+      - { id: llms_txt_fresh, points: 25, desc: "llms.txt 日期章与发布同步", pass_if: "日期章 = 最新发布日" }
+
+  - id: ai_readability
+    base_dimension: 维四
+    name_zh: AI 可读性
+    weight: 8
+    scorer: script
+    checks:
+      - { id: semantic_html, points: 20, desc: "语义 HTML(landmark/headings/list/table 正确)", pass_if: "静态检查+抽查" }
+      - { id: page_json_parity, points: 30, desc: 页面断言<->JSON 字段双向可追踪, 页面不多说一句话, pass_if: "抽查 10 个断言对应率 100%" }
+      - { id: data_endpoints_valid, points: 30, desc: "机器端点合法可达(data-room.json/roadmap.json/llms.txt/llms-full.txt/feed.xml)", pass_if: "全部 200 且合法 JSON/XML/TXT" }
+      - { id: jsonld_full_coverage, points: 20, desc: "JSON-LD 全覆盖(WebSite/WebPage/BreadcrumbList/FAQPage)", pass_if: "覆盖率 100%" }
+
+  - id: zero_broken_links
+    base_dimension: 维五
+    name_zh: 零死链零死路由
+    weight: 8
+    scorer: script
+    checks:
+      - { id: internal_links_200, points: 50, desc: "站内链全部实测可达", pass_if: "全站爬检 0 死链" }
+      - { id: external_links_alive, points: 30, desc: "外链存活且内容与锚文本相符", pass_if: "逐个请求验证" }
+      - { id: no_dead_hash_routes, points: 20, desc: "无死 hash 路由(data-room-catalog.json 无 #page= 死路由)", pass_if: "grep+实测" }
+
+  - id: accessibility
+    base_dimension: 维五
+    name_zh: 无障碍
+    weight: 4
+    scorer: human
+    checks:
+      - { id: keyboard_navigation_full, points: 30, desc: "全程键盘可完成(语言切换/Cookie/Demo/Playground)", pass_if: "Tab 走查无跳跃无焦点丢失" }
+      - { id: focus_ring_visible, points: 25, desc: ":focus-visible 焦点环肉眼可见", pass_if: "全部可交互元素" }
+      - { id: contrast_4_5_text, points: 25, desc: "正文对比度 >= 4.5:1(浅色+暗色)", pass_if: "取色器实测" }
+      - { id: esc_close_order, points: 20, desc: Esc 关闭顺序正确(Cookie->弹窗->菜单), 焦点回触发点, pass_if: "逐项验证" }
+
+  - id: content_integrity
+    base_dimension: 维六
+    name_zh: 内容口径零残留+N=1
+    weight: 3
+    scorer: script
+    script: tools/banned-terms-gate.sh
+    checks:
+      - { id: legacy_terms_zero_hit, points: 40, desc: "旧词黑名单零命中(procurement/concierge/marketplace/agent commerce/代采购/AI Data Go/用户可见处 anomalies-autogpt 旧名)", pass_if: "零命中; data-room 历史档案凭页眉豁免" }
+      - { id: lowercase_vertciti_lock, points: 20, desc: "vertciti 全小写锁定", pass_if: "Vertcity/VERTCITY=0" }
+      - { id: honesty_materials_uniform, points: 20, desc: "诚实材质全站统一(🟢🟡⚪)", pass_if: "口径清单逐项核对" }
+      - { id: n1_narrative_unique, points: 20, desc: "N=1 叙事唯一(运营我的人生)", pass_if: "新内容口径一致" }
+
+# ---
+# 历史变更（changelog）
+# - v1.0 2026-10-02: 初版。底座=卓越标准 v1.0 六维；新增 5 维度映射进六维；
+#   权重总和 100；等级线 S>=95/A++>=90/A>=85/B>=70/C<70；<A 自动立案。
+changelog:
+  - version: v1.0
+    date: 2026-10-02
+    note: 初版（D485 已生效）
