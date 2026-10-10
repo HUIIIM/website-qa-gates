@@ -1,12 +1,12 @@
 ---
 name: "website-qa-gates"
-description: "交付三样东西：网站变更的逐门禁 pass/fail 结论及证据（G1–G9＋G14 发布门禁＋四条动效专项门禁）、11 维度加权评分与等级、低于 A 级时的自动立案记录。用于网站变更发布前的 QA 门禁检查与评分。"
+description: "交付三样东西：网站变更的逐门禁 pass/fail 结论及证据（G1–G9＋G14 发布门禁＋五条动效专项门禁）、11 维度加权评分与等级、低于 A 级时的自动立案记录。用于网站变更发布前的 QA 门禁检查与评分。"
 user_invocable: true
-version: "1.2.1"
+version: "1.4.0"
 triggers: "网站变更发布前；需要 QA 门禁结论＋评分时触发"
 requires: "变更 diff 或 staging 链接"
 inputs: "变更描述"
-safety: "G1-G9＋四条动效专项门禁逐项过；低于 A 级自动立案；390px 页脚逐项目检"
+safety: "G1-G9＋五条动效专项门禁逐项过；低于 A 级自动立案；390px 页脚逐项目检"
 
 ---
 
@@ -26,14 +26,14 @@ safety: "G1-G9＋四条动效专项门禁逐项过；低于 A 级自动立案；
 
 ## 执行流程
 
-### 第一步：逐门禁检查（G1–G9 ＋ G14 ＋ M1–M4）
+### 第一步：逐门禁检查（G1–G9 ＋ G14 ＋ M1–M5）
 
 按 `references/gate-checklist.md` 逐项执行。每项输出：`PASS` / `FAIL` / `条件通过` ＋ 一句话证据；**FAIL 项必须再附"怎么修"**（修到哪一行/改成什么值/验收标准是什么），A-011 升级：结论＋证据＋怎么修三段缺一不可，缺"怎么修"的 FAIL 输出视为门禁报告本身不合格。
 
 **铁律**：任一门禁 FAIL 即停发，返工复验。真浏览器实证项（G9、M1、M2）不许用"看起来没问题"硬过——没跑就是"未验证"，如实标注。
 
 - G1–G9：发布门禁九项（敏感扫描、触控目标、零横滚、体积预算、中英镜像、题材机械项、CSP hash、可达性、真机复验）
-- M1–M4：动效专项四项（关动效静态帧、降速帧率稳定、转场编排审计、减少动态效果三级验收）
+- M1–M5：动效专项五项（关动效静态帧、降速帧率稳定、转场编排审计、减少动态效果三级验收、微交互手感）
 - 附加硬扫：A++ 审美五项（字阶命中、8pt 间距、按钮五态、焦点环全覆盖、count-up 归零）——见检查表
 
 ### 第二步：11 维度打分
@@ -41,12 +41,18 @@ safety: "G1-G9＋四条动效专项门禁逐项过；低于 A 级自动立案；
 按 `references/scorecard-v1.yaml` 的权重模型打分：
 
 - 11 个维度，权重合计 100（真浏览器实证 18、视觉工艺 12、全 CTA 链路闭环 12、性能预算 12、转化链路 8、SEO 全 8、AI 可读性 8、零死链零死路由 8、动效质量 7、无障碍 4、内容口径 3）
-- 维度分＝各检查项得分之和（每项满分 100）；总分＝Σ（维度分 × 权重）/ 100
+- 维度分＝各检查项得分之和（每项满分 100）；总分＝Σ(适用维度得分×权重)/Σ(适用维度权重)
+  ——N/A（不适用）维度直接从分母剔除权重，不按满分计入（P1-5，2026-10-10）；
+  旧公式 Σ(维度分×权重)/100（N/A 按满分）已废止：它让 waived 越多的变更得分越高，
+  27 分白送可把本该立案的 B 抬成 A（实测：适用均分 80 的变更旧公式 85.4=A 免立案，
+  新公式 80.0=B 触发 P1 立案）。
 - 等级线：S ≥95（卓越）／ A++ ≥90（优秀）／ A ≥85（良好）／ B ≥70（达标）／ C ＜70（不达标）
 
 **打分纪律**：
 
-1. 变更不涉及的维度记"不适用"，按满分计但必须标注 N/A，不许拿不相关维度凑分掩盖问题维度。
+1. 变更不涉及的维度记"不适用"，**直接从分母剔除其权重，不按满分计入**（P1-5，2026-10-10；
+  旧口径"N/A 按满分"已废止——"不涉及"不等于"满分"，按满分计是给没验的维度白送分）。
+  N/A 必须标注并说明理由；不许拿不相关维度凑分掩盖问题维度；N/A 越多，总分越贴近适用维度的真实水平。
 2. 既有全站问题（如字阶外字号 backlog）与本次变更引入的问题分开记：前者引用既有台账，后者本次扣分。
 3. 每一分的扣减都要有证据指向（源码行、截图、脚本输出），无证据的扣分视为无效。
 
@@ -79,24 +85,37 @@ safety: "G1-G9＋四条动效专项门禁逐项过；低于 A 级自动立案；
 
 ```bash
 python3 tools/ledger-run.py --release <发布ID> --change "<变更描述>" \
-  [--site-root ~/workspace/vertcity/deploy-prod-root] [--site-url https://vertciti.com]
+  [--site-root <站点根目录>] [--site-url https://example.com]
 ```
+
+环境变量（P0-1，2026-10-10：全部外部路径可移植化，出了本机跑得起来）：
+
+| 变量 | 含义 | 缺省 |
+|---|---|---|
+| `QA_GATES_SITE_ROOT` | 默认站点根目录 | 仓库 `demo/www`（仅演示） |
+| `QA_GATES_SECURITY_GATE` | 外部敏感扫描脚本（G1） | 仓库 `tools/fallback/secret-scan.py` |
+| `QA_GATES_SIZE_GATE` | 外部体积预算脚本（G4） | 仓库 `tools/fallback/size-budget.py` |
 
 - 台账文件：`coverage-ledger.json`（本 skill 根目录，`additive:true` 只追加不覆盖，多轮累积）。
 - 机器可跑的门禁（G1/G4/G7/G8/A1/A2/A5/T1/T2/G12-1/G12-4/V4）真实执行，结论为 pass/fail＋证据引用。
+  G1/G4 无环境变量时走仓库内 fallback 真实执行；环境变量指向缺失路径时直接判 fail（拒绝误判 pass）。
 - 需真浏览器/人工的门禁按诚实原则记 `waived`（未验证），不许用推测代替。
+- **V4 真校验（P0-3，2026-10-10）**：本轮真实 FAIL 全部记入 run 的 `interceptions`
+ （拦截项/处置）；V4 的 evidence 必须逐条引用到该 FAIL 的拦截项记录，引用不到则 V4 自判 fail；
+  本轮零 FAIL 则记"零拦截"并回查上一条 run 的处置闭环，未闭环则 V4 自判 fail。
+  处置闭环用 `tools/ledger-dispose.py --run-id … --gate-id … --action 立案/整改/复验 --result open/closed` 追加。
 - 任一门禁 fail → 脚本 exit 2，按第三步立案规则处理；waived 项在下次真实发布时补跑。
-- 单条目 schema 见 `~/workspace/vertcity/deliverables/dispatch-2026-10-05/g42/coverage-ledger.schema.json`。
+- 单条目 schema 见 `references/coverage-ledger.schema.json`（已收进仓库，P0-1）。
 
 ## 输出格式
 
 ```
-## 门禁检查（G1–G9＋M1–M4）
+## 门禁检查（G1–G9＋G14＋M1–M5）
 | 门禁 | 结论 | 证据 | 怎么修 |
 |---|---|---|---|
 | G1 … | PASS | … | — |
 
-FAIL 项书写规范（A-011 终版格式，必含 7 节：首行 `✖ <RULE-CODE> <结论> [FAIL · <门禁>]` / 位置 / 现状 / 为什么重要 / 怎么修 / 验证 / 关联）：以 `~/workspace/vertcity/deliverables/dispatch-2026-10-05/g37-work/a011-fail-rewrite.md` 为范本（已验货采用），缺"怎么修"的 FAIL 输出视为门禁报告本身不合格。
+FAIL 项书写规范（A-011 终版格式，必含 7 节：首行 `✖ <RULE-CODE> <结论> [FAIL · <门禁>]` / 位置 / 现状 / 为什么重要 / 怎么修 / 验证 / 关联）：以 `references/a011-fail-format.md` 为范本（通用版，已验货采用），缺"怎么修"的 FAIL 输出视为门禁报告本身不合格。
 
 ## 附加硬扫（A++ 五项）
 …
@@ -120,7 +139,7 @@ FAIL 项书写规范（A-011 终版格式，必含 7 节：首行 `✖ <RULE-COD
 ## 参考文件
 
 - `references/scorecard-v1.yaml`：机器可读评分卡（权重、检查项、等级线、立案规则），可直接复制进自动化管线消费。
-- `references/gate-checklist.md`：G1–G9＋M1–M4＋A++ 硬扫的逐项执行方法与通过标准。
+- `references/gate-checklist.md`：G1–G9＋G14＋M1–M5＋A++ 硬扫＋G13 的逐项执行方法与通过标准。
 - `evals/smoke-01.md`：冒烟评估（含一次真实 dry-run 执行记录）。
 
 ## 机械门禁（T4，发布前自动检查）
@@ -156,9 +175,10 @@ FAIL 项书写规范（A-011 终版格式，必含 7 节：首行 `✖ <RULE-COD
 
 ## G14 "AI 初筛＋人工终审"双轮制（N6，2026-10-06 并入）
 
-> 机制来源：steal-to-action N6＝深研模式 6（ADA/fAIr）。速查索引：
-> `~/workspace/skills/learn-from-masters/references/ai-usage-patterns-index.md`（模式 6）。
-> 配套条款：`~/workspace/vertcity/deliverables/qa-checklist.md` §14。
+> 机制来源：steal-to-action N6＝深研模式 6（ADA/fAIr）。外部索引为可选增强：
+> `~/workspace/skills/learn-from-masters/references/ai-usage-patterns-index.md`（模式 6）
+> ——缺失时不影响本门禁执行，以下条款即完整执行口径。
+> 配套条款（可选增强，缺失不影响执行）：`~/workspace/vertcity/deliverables/qa-checklist.md` §14。
 
 - **轮一 AI 初筛（机器轮）**：变更/走查前先跑全量扫描，按五类输出《可疑项清单》
   （绝密泄露 / 品牌违规 / 对比度 / 错字串页 / 首帧有效），每条带文件＋位置＋疑点＋初筛证据。
@@ -171,7 +191,21 @@ FAIL 项书写规范（A-011 终版格式，必含 7 节：首行 `✖ <RULE-COD
 
 ## 版本变更记录
 
-- v1.2.1（2026-10-06）：VIZ9/VIZ24 执行细则进 `references/gate-checklist.md`（色盲模拟方法/对比度取色法/数据表要求；白名单属性 grep 法/blur 面积量法/LCP 差值法/粒子零容忍）＋ 2026-10-06 既有站点基线（keyframes 4 个中 `draw`/`ignite` 含非白名单属性，记既有问题不阻塞新变更）。
+- v1.4.0（2026-10-10）：P0 作弊修复三件套——① P0-3 V4 真校验：`ck_v4` 同义反复删除，
+  改为断言本轮 interceptions 含真实 FAIL 及其处置（引用不到则 V4 自判 fail；
+  零 FAIL 则回查上一条 run 处置闭环），处置链 `tools/ledger-dispose.py`（立案→整改→复验）；
+  ② P1-5 N/A 计分修复：总分公式改为权重剔除，N/A 不再按满分白送分（实测同一份变更
+  旧公式 78.3/85.4 → 新公式 70.3/80.0，堵住"免立案"口子）；③ P0-1 路径可移植化：
+  全部外部路径收敛为 `QA_GATES_SITE_ROOT`／`QA_GATES_SECURITY_GATE`／`QA_GATES_SIZE_GATE`
+  环境变量＋`tools/fallback/` 最小实现（纯 stdlib），外部脚本缺失时拒绝误判 pass；
+  ④ P0-2 自家 CI dogfood：`.github/workflows/qa-gates.yml`（push/PR 跑 demo 门禁＋eval，FAIL 即红）。
+  另修：`ck_t2` 的 `$'—'` 在 dash 下假阴性 bug（改纯 Python 扫描）。
+
+- v1.3.0（2026-10-07）：MV351——新增 M5 "微交互手感"门禁（弹簧参数/三态/粒子三选一＋实测证据；
+  数字滚动按 D182 禁令排除在选项③之外；参数约束库 frontend-design §4b）。编号勘误：深研报告
+  误称"G14 动效门禁"，实际 G14＝AI 初筛＋人工终审双轮制（N6），动效门禁为 M1–M4，M5 顺延；
+  门禁总数 14→15。实证：vertciti.com 首页 #approveBtn 弹簧化改造（按下 90ms scale .96，
+  松开 420ms cubic-bezier(0.34,1.56,0.64,1) 回弹，实测过冲 1.0037）。
 
 - v1.2.0（2026-10-06）：N6 并入——新增 G14 "AI 初筛＋人工终审"双轮制门禁（轮一机器标可疑项五类清单，轮二终审人只看标红＋≥10% 抽查，署名留痕；与 qa-checklist.md §14 联动）。
 

@@ -1,0 +1,21 @@
+# website-qa-gates 自家 CI dogfood（P0-2，2026-10-10）
+# 每次 push/PR 跑 demo 门禁＋eval 断言：门禁 FAIL 即红。
+# 一个"发布门禁"项目没有自己的门禁是公信力硬伤——push 即跑，红了就修。
+name: qa-gates-dogfood
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 运行门禁（demo 真实跑通）
+        run: bash demo/run.sh
+      - name: eval 断言（记账＋零 FAIL）
+        run: bash demo/eval.sh

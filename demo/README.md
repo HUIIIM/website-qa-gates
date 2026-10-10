@@ -4,12 +4,19 @@
 
 ## 运行
 ```bash
-bash demo/run.sh   # 真实跑门禁，记账进 coverage-ledger.json（additive，release=demo-*）
-bash demo/eval.sh  # 输出 PASS/FAIL
+bash demo/run.sh   # 真实跑门禁，记账进 coverage-ledger.json（additive，release=demo-*）；退出码 0=全过，2=有 FAIL
+bash demo/eval.sh  # 输出 PASS/FAIL：断言 release 已记账且零 FAIL
 ```
 
 ## 测试页
-`demo/www/index.html`：故意带 2 个问题（img 无 alt、小触控目标），预期 fail=2。
+`demo/www/`：index.html＋en.html 基线干净（预期 `fail=0`，CI 常绿）。
 
-## 预期输出
-`release=demo-* pass=9 fail=2 waived=21`（数字随门禁版本浮动，关键是真实跑通＋记账）。
+## 红测（验证"FAIL 即红"）
+故意注缺陷看门禁是否真拦，例如在 index.html 某行中文文案里加一个 em-dash（—）：
+```bash
+bash demo/run.sh   # 预期 T2 FAIL，退出码 2
+```
+修掉后恢复常绿。CI dogfood 就靠这个：main 常绿，缺陷提交即红。
+
+## 预期输出（基线）
+`release=demo-* pass=11 fail=0 waived=21`（数字随门禁版本浮动，关键是真实跑通＋记账）。

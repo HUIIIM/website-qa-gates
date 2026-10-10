@@ -2210,6 +2210,3553 @@
         "fail": 2,
         "waived": 21
       }
+    },
+    {
+      "run_id": "demo-20261006-233654",
+      "run_at": "2026-10-06T23:36:57.584147+00:00",
+      "change": "demo: 单测试页门禁跑通",
+      "site_root": "/home/hatch/workspace/skills/website-qa-gates/demo/www",
+      "site_url": "https://vertciti.com",
+      "gates": [
+        {
+          "gate_id": "G1",
+          "name": "data-room 敏感扫描",
+          "run_at": "2026-10-06T23:36:55.302304+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "bash ~/workspace/vertcity/security-watch/data-room-gate.sh"
+            },
+            {
+              "type": "output",
+              "ref": "/home/hatch/workspace/vertcity/deploy-prod-root/data-room/dpa-template-v1.txt:77:contact@vertciti.com | ---- 扫描文件数：17 ---- | 结果：WARN —— 可发布，但请 GC 复核上述项"
+            }
+          ]
+        },
+        {
+          "gate_id": "G4",
+          "name": "体积预算",
+          "run_at": "2026-10-06T23:36:55.336979+00:00",
+          "verdict": "fail",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "bash size-gate.sh /home/hatch/workspace/skills/website-qa-gates/demo/www"
+            },
+            {
+              "type": "output",
+              "ref": "[FAIL] 缺失文件: en.html | [PASS] index.html=277B (0.00MB) | SIZE GATE: FAIL"
+            }
+          ]
+        },
+        {
+          "gate_id": "G7",
+          "name": "CSP hash round-trip",
+          "run_at": "2026-10-06T23:36:55.373248+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "all *.html inline <script> sha256 vs vercel.json script-src"
+            },
+            {
+              "type": "note",
+              "ref": "vercel.json 缺失，未验证"
+            }
+          ]
+        },
+        {
+          "gate_id": "G8",
+          "name": "生产可达性",
+          "run_at": "2026-10-06T23:36:57.365957+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "curl https://vertciti.com/ -> HTTP code"
+            },
+            {
+              "type": "output",
+              "ref": "HTTP 200"
+            }
+          ]
+        },
+        {
+          "gate_id": "A1",
+          "name": "字阶命中",
+          "run_at": "2026-10-06T23:36:57.452880+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep font-size 13/15/17/19px"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "A2",
+          "name": "8pt 间距",
+          "run_at": "2026-10-06T23:36:57.478882+00:00",
+          "verdict": "fail",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep margin/padding px values"
+            },
+            {
+              "type": "output",
+              "ref": "illegal=[2]"
+            }
+          ]
+        },
+        {
+          "gate_id": "A5",
+          "name": "count-up 归零",
+          "run_at": "2026-10-06T23:36:57.490920+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep countUp|animate-number"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "T1",
+          "name": "eyebrow 计数",
+          "run_at": "2026-10-06T23:36:57.522192+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "eyebrow class count vs <section> count"
+            },
+            {
+              "type": "output",
+              "ref": "eyebrow=0 sections=0 limit=1"
+            }
+          ]
+        },
+        {
+          "gate_id": "T2",
+          "name": "em-dash 零",
+          "run_at": "2026-10-06T23:36:57.548132+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep — in html"
+            },
+            {
+              "type": "output",
+              "ref": "files_with_emdash=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-1",
+          "name": "动效白名单属性",
+          "run_at": "2026-10-06T23:36:57.568772+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep transition/animation props"
+            },
+            {
+              "type": "output",
+              "ref": "non-whitelist=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-4",
+          "name": "禁粒子背景",
+          "run_at": "2026-10-06T23:36:57.584042+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep 粒子背景库"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "V4",
+          "name": "拦截/放行记录",
+          "run_at": "2026-10-06T23:36:57.584073+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "本 ledger run 即 V4 要求的真实记录"
+            }
+          ]
+        },
+        {
+          "gate_id": "G2",
+          "name": "G2",
+          "run_at": "2026-10-06T23:36:57.584081+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器 390px 量取触控目标，dry-run 未执行"
+            }
+          ]
+        },
+        {
+          "gate_id": "G3",
+          "name": "G3",
+          "run_at": "2026-10-06T23:36:57.584087+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 playwright 390px 渲染，dry-run 未执行（overflow-gate.sh 需 .qa-venv）"
+            }
+          ]
+        },
+        {
+          "gate_id": "G5",
+          "name": "G5",
+          "run_at": "2026-10-06T23:36:57.584091+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需人工中英逐项比对"
+            }
+          ]
+        },
+        {
+          "gate_id": "G6",
+          "name": "G6",
+          "run_at": "2026-10-06T23:36:57.584093+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需本次变更的数字联动上下文，dry-run 无变更单"
+            }
+          ]
+        },
+        {
+          "gate_id": "G9",
+          "name": "G9",
+          "run_at": "2026-10-06T23:36:57.584095+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器渲染复验"
+            }
+          ]
+        },
+        {
+          "gate_id": "M1",
+          "name": "M1",
+          "run_at": "2026-10-06T23:36:57.584099+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器关动效截帧目检"
+            }
+          ]
+        },
+        {
+          "gate_id": "M2",
+          "name": "M2",
+          "run_at": "2026-10-06T23:36:57.584101+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真机节流帧率测试；纯静态变更可记 N/A（本次 dry-run 按未验证）"
+            }
+          ]
+        },
+        {
+          "gate_id": "M3",
+          "name": "M3",
+          "run_at": "2026-10-06T23:36:57.584104+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需转场清单审计文档"
+            }
+          ]
+        },
+        {
+          "gate_id": "M4",
+          "name": "M4",
+          "run_at": "2026-10-06T23:36:57.584106+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 reduce-motion 三级复验"
+            }
+          ]
+        },
+        {
+          "gate_id": "A3",
+          "name": "A3",
+          "run_at": "2026-10-06T23:36:57.584109+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需按钮五态样式目检"
+            }
+          ]
+        },
+        {
+          "gate_id": "A4",
+          "name": "A4",
+          "run_at": "2026-10-06T23:36:57.584112+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需键盘 Tab 全程可达验证"
+            }
+          ]
+        },
+        {
+          "gate_id": "T3",
+          "name": "T3",
+          "run_at": "2026-10-06T23:36:57.584114+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需全页 CTA 意图人工去重"
+            }
+          ]
+        },
+        {
+          "gate_id": "T4",
+          "name": "T4",
+          "run_at": "2026-10-06T23:36:57.584125+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 logo 墙 alt+授权记录人工核对"
+            }
+          ]
+        },
+        {
+          "gate_id": "T5",
+          "name": "T5",
+          "run_at": "2026-10-06T23:36:57.584128+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器确认 CTA 文案无折行"
+            }
+          ]
+        },
+        {
+          "gate_id": "V1",
+          "name": "V1",
+          "run_at": "2026-10-06T23:36:57.584130+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需色盲模拟检查"
+            }
+          ]
+        },
+        {
+          "gate_id": "V2",
+          "name": "V2",
+          "run_at": "2026-10-06T23:36:57.584132+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需图表文字对比度取色"
+            }
+          ]
+        },
+        {
+          "gate_id": "V3",
+          "name": "V3",
+          "run_at": "2026-10-06T23:36:57.584134+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需图表文字替代摘要人工确认"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-2",
+          "name": "G12-2",
+          "run_at": "2026-10-06T23:36:57.584136+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "blur 面积需渲染测量"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-3",
+          "name": "G12-3",
+          "run_at": "2026-10-06T23:36:57.584139+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "LCP 增量需真机 Lighthouse"
+            }
+          ]
+        },
+        {
+          "gate_id": "G13",
+          "name": "G13",
+          "run_at": "2026-10-06T23:36:57.584142+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需变更单附模糊词翻译表，dry-run 无变更单"
+            }
+          ]
+        }
+      ],
+      "summary": {
+        "pass": 9,
+        "fail": 2,
+        "waived": 21
+      }
+    },
+    {
+      "run_id": "demo-20261006-233701",
+      "run_at": "2026-10-06T23:37:03.114931+00:00",
+      "change": "demo: 单测试页门禁跑通",
+      "site_root": "/home/hatch/workspace/skills/website-qa-gates/demo/www",
+      "site_url": "https://vertciti.com",
+      "gates": [
+        {
+          "gate_id": "G1",
+          "name": "data-room 敏感扫描",
+          "run_at": "2026-10-06T23:37:01.908011+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "bash ~/workspace/vertcity/security-watch/data-room-gate.sh"
+            },
+            {
+              "type": "output",
+              "ref": "/home/hatch/workspace/vertcity/deploy-prod-root/data-room/dpa-template-v1.txt:77:contact@vertciti.com | ---- 扫描文件数：17 ---- | 结果：WARN —— 可发布，但请 GC 复核上述项"
+            }
+          ]
+        },
+        {
+          "gate_id": "G4",
+          "name": "体积预算",
+          "run_at": "2026-10-06T23:37:01.946125+00:00",
+          "verdict": "fail",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "bash size-gate.sh /home/hatch/workspace/skills/website-qa-gates/demo/www"
+            },
+            {
+              "type": "output",
+              "ref": "[FAIL] 缺失文件: en.html | [PASS] index.html=277B (0.00MB) | SIZE GATE: FAIL"
+            }
+          ]
+        },
+        {
+          "gate_id": "G7",
+          "name": "CSP hash round-trip",
+          "run_at": "2026-10-06T23:37:01.947056+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "all *.html inline <script> sha256 vs vercel.json script-src"
+            },
+            {
+              "type": "note",
+              "ref": "vercel.json 缺失，未验证"
+            }
+          ]
+        },
+        {
+          "gate_id": "G8",
+          "name": "生产可达性",
+          "run_at": "2026-10-06T23:37:03.087289+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "curl https://vertciti.com/ -> HTTP code"
+            },
+            {
+              "type": "output",
+              "ref": "HTTP 200"
+            }
+          ]
+        },
+        {
+          "gate_id": "A1",
+          "name": "字阶命中",
+          "run_at": "2026-10-06T23:37:03.091304+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep font-size 13/15/17/19px"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "A2",
+          "name": "8pt 间距",
+          "run_at": "2026-10-06T23:37:03.096789+00:00",
+          "verdict": "fail",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep margin/padding px values"
+            },
+            {
+              "type": "output",
+              "ref": "illegal=[2]"
+            }
+          ]
+        },
+        {
+          "gate_id": "A5",
+          "name": "count-up 归零",
+          "run_at": "2026-10-06T23:37:03.099599+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep countUp|animate-number"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "T1",
+          "name": "eyebrow 计数",
+          "run_at": "2026-10-06T23:37:03.105917+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "eyebrow class count vs <section> count"
+            },
+            {
+              "type": "output",
+              "ref": "eyebrow=0 sections=0 limit=1"
+            }
+          ]
+        },
+        {
+          "gate_id": "T2",
+          "name": "em-dash 零",
+          "run_at": "2026-10-06T23:37:03.108897+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep — in html"
+            },
+            {
+              "type": "output",
+              "ref": "files_with_emdash=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-1",
+          "name": "动效白名单属性",
+          "run_at": "2026-10-06T23:37:03.111842+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep transition/animation props"
+            },
+            {
+              "type": "output",
+              "ref": "non-whitelist=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-4",
+          "name": "禁粒子背景",
+          "run_at": "2026-10-06T23:37:03.114844+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep 粒子背景库"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "V4",
+          "name": "拦截/放行记录",
+          "run_at": "2026-10-06T23:37:03.114861+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "本 ledger run 即 V4 要求的真实记录"
+            }
+          ]
+        },
+        {
+          "gate_id": "G2",
+          "name": "G2",
+          "run_at": "2026-10-06T23:37:03.114868+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器 390px 量取触控目标，dry-run 未执行"
+            }
+          ]
+        },
+        {
+          "gate_id": "G3",
+          "name": "G3",
+          "run_at": "2026-10-06T23:37:03.114874+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 playwright 390px 渲染，dry-run 未执行（overflow-gate.sh 需 .qa-venv）"
+            }
+          ]
+        },
+        {
+          "gate_id": "G5",
+          "name": "G5",
+          "run_at": "2026-10-06T23:37:03.114877+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需人工中英逐项比对"
+            }
+          ]
+        },
+        {
+          "gate_id": "G6",
+          "name": "G6",
+          "run_at": "2026-10-06T23:37:03.114879+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需本次变更的数字联动上下文，dry-run 无变更单"
+            }
+          ]
+        },
+        {
+          "gate_id": "G9",
+          "name": "G9",
+          "run_at": "2026-10-06T23:37:03.114882+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器渲染复验"
+            }
+          ]
+        },
+        {
+          "gate_id": "M1",
+          "name": "M1",
+          "run_at": "2026-10-06T23:37:03.114885+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器关动效截帧目检"
+            }
+          ]
+        },
+        {
+          "gate_id": "M2",
+          "name": "M2",
+          "run_at": "2026-10-06T23:37:03.114888+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真机节流帧率测试；纯静态变更可记 N/A（本次 dry-run 按未验证）"
+            }
+          ]
+        },
+        {
+          "gate_id": "M3",
+          "name": "M3",
+          "run_at": "2026-10-06T23:37:03.114891+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需转场清单审计文档"
+            }
+          ]
+        },
+        {
+          "gate_id": "M4",
+          "name": "M4",
+          "run_at": "2026-10-06T23:37:03.114893+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 reduce-motion 三级复验"
+            }
+          ]
+        },
+        {
+          "gate_id": "A3",
+          "name": "A3",
+          "run_at": "2026-10-06T23:37:03.114896+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需按钮五态样式目检"
+            }
+          ]
+        },
+        {
+          "gate_id": "A4",
+          "name": "A4",
+          "run_at": "2026-10-06T23:37:03.114898+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需键盘 Tab 全程可达验证"
+            }
+          ]
+        },
+        {
+          "gate_id": "T3",
+          "name": "T3",
+          "run_at": "2026-10-06T23:37:03.114900+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需全页 CTA 意图人工去重"
+            }
+          ]
+        },
+        {
+          "gate_id": "T4",
+          "name": "T4",
+          "run_at": "2026-10-06T23:37:03.114909+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 logo 墙 alt+授权记录人工核对"
+            }
+          ]
+        },
+        {
+          "gate_id": "T5",
+          "name": "T5",
+          "run_at": "2026-10-06T23:37:03.114912+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器确认 CTA 文案无折行"
+            }
+          ]
+        },
+        {
+          "gate_id": "V1",
+          "name": "V1",
+          "run_at": "2026-10-06T23:37:03.114914+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需色盲模拟检查"
+            }
+          ]
+        },
+        {
+          "gate_id": "V2",
+          "name": "V2",
+          "run_at": "2026-10-06T23:37:03.114916+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需图表文字对比度取色"
+            }
+          ]
+        },
+        {
+          "gate_id": "V3",
+          "name": "V3",
+          "run_at": "2026-10-06T23:37:03.114918+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需图表文字替代摘要人工确认"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-2",
+          "name": "G12-2",
+          "run_at": "2026-10-06T23:37:03.114921+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "blur 面积需渲染测量"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-3",
+          "name": "G12-3",
+          "run_at": "2026-10-06T23:37:03.114923+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "LCP 增量需真机 Lighthouse"
+            }
+          ]
+        },
+        {
+          "gate_id": "G13",
+          "name": "G13",
+          "run_at": "2026-10-06T23:37:03.114927+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需变更单附模糊词翻译表，dry-run 无变更单"
+            }
+          ]
+        }
+      ],
+      "summary": {
+        "pass": 9,
+        "fail": 2,
+        "waived": 21
+      }
+    },
+    {
+      "run_id": "demo-20261006-233720",
+      "run_at": "2026-10-06T23:37:22.173143+00:00",
+      "change": "demo: 单测试页门禁跑通",
+      "site_root": "/home/hatch/workspace/skills/website-qa-gates/demo/www",
+      "site_url": "https://vertciti.com",
+      "gates": [
+        {
+          "gate_id": "G1",
+          "name": "data-room 敏感扫描",
+          "run_at": "2026-10-06T23:37:20.431461+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "bash ~/workspace/vertcity/security-watch/data-room-gate.sh"
+            },
+            {
+              "type": "output",
+              "ref": "/home/hatch/workspace/vertcity/deploy-prod-root/data-room/dpa-template-v1.txt:77:contact@vertciti.com | ---- 扫描文件数：17 ---- | 结果：WARN —— 可发布，但请 GC 复核上述项"
+            }
+          ]
+        },
+        {
+          "gate_id": "G4",
+          "name": "体积预算",
+          "run_at": "2026-10-06T23:37:20.450080+00:00",
+          "verdict": "fail",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "bash size-gate.sh /home/hatch/workspace/skills/website-qa-gates/demo/www"
+            },
+            {
+              "type": "output",
+              "ref": "[FAIL] 缺失文件: en.html | [PASS] index.html=277B (0.00MB) | SIZE GATE: FAIL"
+            }
+          ]
+        },
+        {
+          "gate_id": "G7",
+          "name": "CSP hash round-trip",
+          "run_at": "2026-10-06T23:37:20.450961+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "all *.html inline <script> sha256 vs vercel.json script-src"
+            },
+            {
+              "type": "note",
+              "ref": "vercel.json 缺失，未验证"
+            }
+          ]
+        },
+        {
+          "gate_id": "G8",
+          "name": "生产可达性",
+          "run_at": "2026-10-06T23:37:22.026516+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "curl https://vertciti.com/ -> HTTP code"
+            },
+            {
+              "type": "output",
+              "ref": "HTTP 200"
+            }
+          ]
+        },
+        {
+          "gate_id": "A1",
+          "name": "字阶命中",
+          "run_at": "2026-10-06T23:37:22.050842+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep font-size 13/15/17/19px"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "A2",
+          "name": "8pt 间距",
+          "run_at": "2026-10-06T23:37:22.066808+00:00",
+          "verdict": "fail",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep margin/padding px values"
+            },
+            {
+              "type": "output",
+              "ref": "illegal=[2]"
+            }
+          ]
+        },
+        {
+          "gate_id": "A5",
+          "name": "count-up 归零",
+          "run_at": "2026-10-06T23:37:22.083012+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep countUp|animate-number"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "T1",
+          "name": "eyebrow 计数",
+          "run_at": "2026-10-06T23:37:22.121981+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "eyebrow class count vs <section> count"
+            },
+            {
+              "type": "output",
+              "ref": "eyebrow=0 sections=0 limit=1"
+            }
+          ]
+        },
+        {
+          "gate_id": "T2",
+          "name": "em-dash 零",
+          "run_at": "2026-10-06T23:37:22.137244+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep — in html"
+            },
+            {
+              "type": "output",
+              "ref": "files_with_emdash=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-1",
+          "name": "动效白名单属性",
+          "run_at": "2026-10-06T23:37:22.151801+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep transition/animation props"
+            },
+            {
+              "type": "output",
+              "ref": "non-whitelist=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-4",
+          "name": "禁粒子背景",
+          "run_at": "2026-10-06T23:37:22.173046+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep 粒子背景库"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "V4",
+          "name": "拦截/放行记录",
+          "run_at": "2026-10-06T23:37:22.173072+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "本 ledger run 即 V4 要求的真实记录"
+            }
+          ]
+        },
+        {
+          "gate_id": "G2",
+          "name": "G2",
+          "run_at": "2026-10-06T23:37:22.173080+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器 390px 量取触控目标，dry-run 未执行"
+            }
+          ]
+        },
+        {
+          "gate_id": "G3",
+          "name": "G3",
+          "run_at": "2026-10-06T23:37:22.173086+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 playwright 390px 渲染，dry-run 未执行（overflow-gate.sh 需 .qa-venv）"
+            }
+          ]
+        },
+        {
+          "gate_id": "G5",
+          "name": "G5",
+          "run_at": "2026-10-06T23:37:22.173089+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需人工中英逐项比对"
+            }
+          ]
+        },
+        {
+          "gate_id": "G6",
+          "name": "G6",
+          "run_at": "2026-10-06T23:37:22.173092+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需本次变更的数字联动上下文，dry-run 无变更单"
+            }
+          ]
+        },
+        {
+          "gate_id": "G9",
+          "name": "G9",
+          "run_at": "2026-10-06T23:37:22.173094+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器渲染复验"
+            }
+          ]
+        },
+        {
+          "gate_id": "M1",
+          "name": "M1",
+          "run_at": "2026-10-06T23:37:22.173097+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器关动效截帧目检"
+            }
+          ]
+        },
+        {
+          "gate_id": "M2",
+          "name": "M2",
+          "run_at": "2026-10-06T23:37:22.173100+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真机节流帧率测试；纯静态变更可记 N/A（本次 dry-run 按未验证）"
+            }
+          ]
+        },
+        {
+          "gate_id": "M3",
+          "name": "M3",
+          "run_at": "2026-10-06T23:37:22.173103+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需转场清单审计文档"
+            }
+          ]
+        },
+        {
+          "gate_id": "M4",
+          "name": "M4",
+          "run_at": "2026-10-06T23:37:22.173105+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 reduce-motion 三级复验"
+            }
+          ]
+        },
+        {
+          "gate_id": "A3",
+          "name": "A3",
+          "run_at": "2026-10-06T23:37:22.173108+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需按钮五态样式目检"
+            }
+          ]
+        },
+        {
+          "gate_id": "A4",
+          "name": "A4",
+          "run_at": "2026-10-06T23:37:22.173110+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需键盘 Tab 全程可达验证"
+            }
+          ]
+        },
+        {
+          "gate_id": "T3",
+          "name": "T3",
+          "run_at": "2026-10-06T23:37:22.173112+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需全页 CTA 意图人工去重"
+            }
+          ]
+        },
+        {
+          "gate_id": "T4",
+          "name": "T4",
+          "run_at": "2026-10-06T23:37:22.173119+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 logo 墙 alt+授权记录人工核对"
+            }
+          ]
+        },
+        {
+          "gate_id": "T5",
+          "name": "T5",
+          "run_at": "2026-10-06T23:37:22.173122+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器确认 CTA 文案无折行"
+            }
+          ]
+        },
+        {
+          "gate_id": "V1",
+          "name": "V1",
+          "run_at": "2026-10-06T23:37:22.173126+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需色盲模拟检查"
+            }
+          ]
+        },
+        {
+          "gate_id": "V2",
+          "name": "V2",
+          "run_at": "2026-10-06T23:37:22.173128+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需图表文字对比度取色"
+            }
+          ]
+        },
+        {
+          "gate_id": "V3",
+          "name": "V3",
+          "run_at": "2026-10-06T23:37:22.173130+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需图表文字替代摘要人工确认"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-2",
+          "name": "G12-2",
+          "run_at": "2026-10-06T23:37:22.173132+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "blur 面积需渲染测量"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-3",
+          "name": "G12-3",
+          "run_at": "2026-10-06T23:37:22.173135+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "LCP 增量需真机 Lighthouse"
+            }
+          ]
+        },
+        {
+          "gate_id": "G13",
+          "name": "G13",
+          "run_at": "2026-10-06T23:37:22.173137+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需变更单附模糊词翻译表，dry-run 无变更单"
+            }
+          ]
+        }
+      ],
+      "summary": {
+        "pass": 9,
+        "fail": 2,
+        "waived": 21
+      }
+    },
+    {
+      "run_id": "demo-20261006-233733",
+      "run_at": "2026-10-06T23:37:36.136527+00:00",
+      "change": "demo: 单测试页门禁跑通",
+      "site_root": "/home/hatch/workspace/skills/website-qa-gates/demo/www",
+      "site_url": "https://vertciti.com",
+      "gates": [
+        {
+          "gate_id": "G1",
+          "name": "data-room 敏感扫描",
+          "run_at": "2026-10-06T23:37:33.880676+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "bash ~/workspace/vertcity/security-watch/data-room-gate.sh"
+            },
+            {
+              "type": "output",
+              "ref": "/home/hatch/workspace/vertcity/deploy-prod-root/data-room/dpa-template-v1.txt:77:contact@vertciti.com | ---- 扫描文件数：17 ---- | 结果：WARN —— 可发布，但请 GC 复核上述项"
+            }
+          ]
+        },
+        {
+          "gate_id": "G4",
+          "name": "体积预算",
+          "run_at": "2026-10-06T23:37:33.922678+00:00",
+          "verdict": "fail",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "bash size-gate.sh /home/hatch/workspace/skills/website-qa-gates/demo/www"
+            },
+            {
+              "type": "output",
+              "ref": "[FAIL] 缺失文件: en.html | [PASS] index.html=277B (0.00MB) | SIZE GATE: FAIL"
+            }
+          ]
+        },
+        {
+          "gate_id": "G7",
+          "name": "CSP hash round-trip",
+          "run_at": "2026-10-06T23:37:33.929965+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "all *.html inline <script> sha256 vs vercel.json script-src"
+            },
+            {
+              "type": "note",
+              "ref": "vercel.json 缺失，未验证"
+            }
+          ]
+        },
+        {
+          "gate_id": "G8",
+          "name": "生产可达性",
+          "run_at": "2026-10-06T23:37:36.034772+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "curl https://vertciti.com/ -> HTTP code"
+            },
+            {
+              "type": "output",
+              "ref": "HTTP 200"
+            }
+          ]
+        },
+        {
+          "gate_id": "A1",
+          "name": "字阶命中",
+          "run_at": "2026-10-06T23:37:36.044038+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep font-size 13/15/17/19px"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "A2",
+          "name": "8pt 间距",
+          "run_at": "2026-10-06T23:37:36.053017+00:00",
+          "verdict": "fail",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep margin/padding px values"
+            },
+            {
+              "type": "output",
+              "ref": "illegal=[2]"
+            }
+          ]
+        },
+        {
+          "gate_id": "A5",
+          "name": "count-up 归零",
+          "run_at": "2026-10-06T23:37:36.066187+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep countUp|animate-number"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "T1",
+          "name": "eyebrow 计数",
+          "run_at": "2026-10-06T23:37:36.089469+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "eyebrow class count vs <section> count"
+            },
+            {
+              "type": "output",
+              "ref": "eyebrow=0 sections=0 limit=1"
+            }
+          ]
+        },
+        {
+          "gate_id": "T2",
+          "name": "em-dash 零",
+          "run_at": "2026-10-06T23:37:36.098740+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep — in html"
+            },
+            {
+              "type": "output",
+              "ref": "files_with_emdash=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-1",
+          "name": "动效白名单属性",
+          "run_at": "2026-10-06T23:37:36.114520+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep transition/animation props"
+            },
+            {
+              "type": "output",
+              "ref": "non-whitelist=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-4",
+          "name": "禁粒子背景",
+          "run_at": "2026-10-06T23:37:36.136437+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep 粒子背景库"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "V4",
+          "name": "拦截/放行记录",
+          "run_at": "2026-10-06T23:37:36.136458+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "本 ledger run 即 V4 要求的真实记录"
+            }
+          ]
+        },
+        {
+          "gate_id": "G2",
+          "name": "G2",
+          "run_at": "2026-10-06T23:37:36.136466+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器 390px 量取触控目标，dry-run 未执行"
+            }
+          ]
+        },
+        {
+          "gate_id": "G3",
+          "name": "G3",
+          "run_at": "2026-10-06T23:37:36.136471+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 playwright 390px 渲染，dry-run 未执行（overflow-gate.sh 需 .qa-venv）"
+            }
+          ]
+        },
+        {
+          "gate_id": "G5",
+          "name": "G5",
+          "run_at": "2026-10-06T23:37:36.136474+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需人工中英逐项比对"
+            }
+          ]
+        },
+        {
+          "gate_id": "G6",
+          "name": "G6",
+          "run_at": "2026-10-06T23:37:36.136476+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需本次变更的数字联动上下文，dry-run 无变更单"
+            }
+          ]
+        },
+        {
+          "gate_id": "G9",
+          "name": "G9",
+          "run_at": "2026-10-06T23:37:36.136479+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器渲染复验"
+            }
+          ]
+        },
+        {
+          "gate_id": "M1",
+          "name": "M1",
+          "run_at": "2026-10-06T23:37:36.136482+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器关动效截帧目检"
+            }
+          ]
+        },
+        {
+          "gate_id": "M2",
+          "name": "M2",
+          "run_at": "2026-10-06T23:37:36.136485+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真机节流帧率测试；纯静态变更可记 N/A（本次 dry-run 按未验证）"
+            }
+          ]
+        },
+        {
+          "gate_id": "M3",
+          "name": "M3",
+          "run_at": "2026-10-06T23:37:36.136487+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需转场清单审计文档"
+            }
+          ]
+        },
+        {
+          "gate_id": "M4",
+          "name": "M4",
+          "run_at": "2026-10-06T23:37:36.136490+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 reduce-motion 三级复验"
+            }
+          ]
+        },
+        {
+          "gate_id": "A3",
+          "name": "A3",
+          "run_at": "2026-10-06T23:37:36.136493+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需按钮五态样式目检"
+            }
+          ]
+        },
+        {
+          "gate_id": "A4",
+          "name": "A4",
+          "run_at": "2026-10-06T23:37:36.136495+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需键盘 Tab 全程可达验证"
+            }
+          ]
+        },
+        {
+          "gate_id": "T3",
+          "name": "T3",
+          "run_at": "2026-10-06T23:37:36.136497+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需全页 CTA 意图人工去重"
+            }
+          ]
+        },
+        {
+          "gate_id": "T4",
+          "name": "T4",
+          "run_at": "2026-10-06T23:37:36.136504+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 logo 墙 alt+授权记录人工核对"
+            }
+          ]
+        },
+        {
+          "gate_id": "T5",
+          "name": "T5",
+          "run_at": "2026-10-06T23:37:36.136506+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器确认 CTA 文案无折行"
+            }
+          ]
+        },
+        {
+          "gate_id": "V1",
+          "name": "V1",
+          "run_at": "2026-10-06T23:37:36.136510+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需色盲模拟检查"
+            }
+          ]
+        },
+        {
+          "gate_id": "V2",
+          "name": "V2",
+          "run_at": "2026-10-06T23:37:36.136512+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需图表文字对比度取色"
+            }
+          ]
+        },
+        {
+          "gate_id": "V3",
+          "name": "V3",
+          "run_at": "2026-10-06T23:37:36.136514+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需图表文字替代摘要人工确认"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-2",
+          "name": "G12-2",
+          "run_at": "2026-10-06T23:37:36.136517+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "blur 面积需渲染测量"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-3",
+          "name": "G12-3",
+          "run_at": "2026-10-06T23:37:36.136519+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "LCP 增量需真机 Lighthouse"
+            }
+          ]
+        },
+        {
+          "gate_id": "G13",
+          "name": "G13",
+          "run_at": "2026-10-06T23:37:36.136521+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需变更单附模糊词翻译表，dry-run 无变更单"
+            }
+          ]
+        }
+      ],
+      "summary": {
+        "pass": 9,
+        "fail": 2,
+        "waived": 21
+      }
+    },
+    {
+      "run_id": "v2-20261008-qa",
+      "run_at": "2026-10-09T02:47:05.035151+00:00",
+      "change": "vertciti.com v2 全套发布门禁（QA 执行期）：G2/G9 FAIL 打回，总分 77.0/B",
+      "site_root": "~/workspace/vertcity/site-v2/public",
+      "site_url": "(未部署)",
+      "summary": {
+        "verdict": "打回",
+        "gate_fail": [
+          "G2",
+          "G9"
+        ],
+        "p2_items": [
+          "A2",
+          "L1",
+          "Miao meta 残留",
+          "E1 canon 悬空",
+          "changelog research 空态",
+          "V4 占位",
+          "文案冗余"
+        ],
+        "score": 77.0,
+        "grade": "B",
+        "evidence_dir": "~/workspace/vertcity/site-v2/evidence/",
+        "verdict_file": "~/workspace/vertcity/site-v2-rebuild/qa/qa-verdict-20261008.md"
+      },
+      "gates": [
+        {
+          "gate_id": "G1",
+          "name": "data-room 敏感扫描",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep 2027-02/绝密/SECRET/私钥/token 全 public/"
+            },
+            {
+              "type": "output",
+              "ref": "0 hits; data-room.json valid JSON(10 items); 邮箱 0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G2",
+          "name": "触控目标 ≥44×44",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "fail",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "playwright 390px getBoundingClientRect 全量"
+            },
+            {
+              "type": "output",
+              "ref": "lang 按钮 43x25/35x21; en-source 按钮高 25-40; changelog filter 高 25 -> bad"
+            }
+          ]
+        },
+        {
+          "gate_id": "G3",
+          "name": "390px 零横向截断",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "playwright 390px逐元素 right>391"
+            },
+            {
+              "type": "output",
+              "ref": "6 页全部 0 溢出元素"
+            }
+          ]
+        },
+        {
+          "gate_id": "G4",
+          "name": "体积预算",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "du/stat"
+            },
+            {
+              "type": "output",
+              "ref": "整站 476KB; 最大 HTML 21078B; 远低于 1.5MB"
+            }
+          ]
+        },
+        {
+          "gate_id": "G5",
+          "name": "中英镜像一致性",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "bi-stack/?lang=en/全角标点 grep"
+            },
+            {
+              "type": "output",
+              "ref": "EN 全角标点 0; ?lang=en 跳转机制正常; 双语上下排符合 E3"
+            }
+          ]
+        },
+        {
+          "gate_id": "G6",
+          "name": "题材机械项",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "badge 清单 grep"
+            },
+            {
+              "type": "output",
+              "ref": "14 live/4 mock/2 plan; 记住已降 yellow; dealdesk failing 如实"
+            }
+          ]
+        },
+        {
+          "gate_id": "G7",
+          "name": "CSP hash round-trip",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "全 html 内联 script 提取"
+            },
+            {
+              "type": "output",
+              "ref": "0 内联 script; 无 CSP hash 风险; vercel.json 不在交付物内"
+            }
+          ]
+        },
+        {
+          "gate_id": "G8",
+          "name": "生产可达性",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "curl https://vertciti.com/"
+            },
+            {
+              "type": "output",
+              "ref": "v2 未部署，预替换 QA；部署时补跑"
+            }
+          ]
+        },
+        {
+          "gate_id": "G9",
+          "name": "真机渲染复验",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "fail",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "headless Chromium 12 截图＋取色"
+            },
+            {
+              "type": "output",
+              "ref": "渲染正常无 JS 错误；caption #6B7280 对比度 4.02<4.5 -> R2 FAIL; 真机待补"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-1",
+          "name": "动效白名单",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep keyframes/transition"
+            },
+            {
+              "type": "output",
+              "ref": "仅 badge-pulse(opacity)＋抽屉 220ms transform/opacity; 无粒子/canvas"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-4",
+          "name": "禁粒子背景",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep particle|<canvas"
+            },
+            {
+              "type": "output",
+              "ref": "0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G13",
+          "name": "模糊词翻译",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep 高级/简洁/大气/有质感/更顺眼"
+            },
+            {
+              "type": "output",
+              "ref": "0 命中"
+            }
+          ]
+        },
+        {
+          "gate_id": "G14",
+          "name": "AI 初筛＋人工终审",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "轮一 10 命中 / 轮二终审确认 9"
+            },
+            {
+              "type": "output",
+              "ref": "终审：打回｜QA 组｜2026-10-08｜G2,G9; 误报 3"
+            }
+          ]
+        },
+        {
+          "gate_id": "M1",
+          "name": "关动效静态帧",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "静态截图 12 张"
+            },
+            {
+              "type": "output",
+              "ref": "首屏设计成立"
+            }
+          ]
+        },
+        {
+          "gate_id": "M2",
+          "name": "降速帧率稳定",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "-"
+            },
+            {
+              "type": "output",
+              "ref": "本环境无 FPS 测量条件"
+            }
+          ]
+        },
+        {
+          "gate_id": "M3",
+          "name": "转场编排审计",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "转场清单"
+            },
+            {
+              "type": "output",
+              "ref": "仅抽屉 220ms transform（L2 下钻，有意义）＋badge pulse"
+            }
+          ]
+        },
+        {
+          "gate_id": "M4",
+          "name": "reduced-motion",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep prefers-reduced-motion"
+            },
+            {
+              "type": "output",
+              "ref": "覆盖 badge-pulse＋抽屉，降级为静态"
+            }
+          ]
+        },
+        {
+          "gate_id": "M5",
+          "name": "微交互手感",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "-"
+            },
+            {
+              "type": "output",
+              "ref": "无 qualifying micro-interaction（静态状态切换为主）"
+            }
+          ]
+        },
+        {
+          "gate_id": "A1",
+          "name": "字阶命中",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "CSS tokens"
+            },
+            {
+              "type": "output",
+              "ref": "40/32/24/20/16/14/12 rem 全命中"
+            }
+          ]
+        },
+        {
+          "gate_id": "A2",
+          "name": "8pt 间距",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "fail",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "margin/padding/gap 8pt 网格 grep"
+            },
+            {
+              "type": "output",
+              "ref": "63 处非网格声明"
+            }
+          ]
+        },
+        {
+          "gate_id": "A5",
+          "name": "count-up 归零",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep countUp|animate-number"
+            },
+            {
+              "type": "output",
+              "ref": "0"
+            }
+          ]
+        },
+        {
+          "gate_id": "T1",
+          "name": "eyebrow 计数",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep eyebrow"
+            },
+            {
+              "type": "output",
+              "ref": "6 页全部 0"
+            }
+          ]
+        },
+        {
+          "gate_id": "T2",
+          "name": "em-dash",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "冲突裁定"
+            },
+            {
+              "type": "output",
+              "ref": "skill 机械规则 vs 定义 L1 逐字句（含——）：定义优先，判 PASS，冲突留痕"
+            }
+          ]
+        },
+        {
+          "gate_id": "V4",
+          "name": "真实痕迹配图",
+          "run_at": "2026-10-09T02:47:05.035151+00:00",
+          "verdict": "fail",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "占位框 grep＋目检"
+            },
+            {
+              "type": "output",
+              "ref": "首页 3＋/Miao 3 处'待提供'占位；无欺诈性配图；内容组待办"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run_id": "demo-20261010-034903",
+      "run_at": "2026-10-10T03:49:06.084418+00:00",
+      "change": "demo: 单测试页门禁跑通",
+      "site_root": "/home/hatch/workspace/skills/website-qa-gates/demo/www",
+      "site_url": "https://vertciti.com",
+      "gates": [
+        {
+          "gate_id": "G1",
+          "name": "data-room 敏感扫描",
+          "run_at": "2026-10-10T03:49:04.075779+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "仓库 fallback secret-scan.py"
+            },
+            {
+              "type": "output",
+              "ref": "GATE PASS: 敏感扫描零命中（fallback 最小规则集：绝密/私钥/token 前缀）"
+            }
+          ]
+        },
+        {
+          "gate_id": "G4",
+          "name": "体积预算",
+          "run_at": "2026-10-10T03:49:04.161484+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "仓库 fallback size-budget.py"
+            },
+            {
+              "type": "output",
+              "ref": "GATE PASS: 体积预算通过（fallback 最小规则：单文件 1.2MB 红线）"
+            }
+          ]
+        },
+        {
+          "gate_id": "G7",
+          "name": "CSP hash round-trip",
+          "run_at": "2026-10-10T03:49:04.165621+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "all *.html inline <script> sha256 vs vercel.json script-src"
+            },
+            {
+              "type": "note",
+              "ref": "vercel.json 缺失，未验证"
+            }
+          ]
+        },
+        {
+          "gate_id": "G8",
+          "name": "生产可达性",
+          "run_at": "2026-10-10T03:49:05.920308+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "curl https://vertciti.com/ -> HTTP code"
+            },
+            {
+              "type": "output",
+              "ref": "HTTP 200"
+            }
+          ]
+        },
+        {
+          "gate_id": "A1",
+          "name": "字阶命中",
+          "run_at": "2026-10-10T03:49:05.972897+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep font-size 13/15/17/19px"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "A2",
+          "name": "8pt 间距",
+          "run_at": "2026-10-10T03:49:05.988186+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep margin/padding px values"
+            },
+            {
+              "type": "output",
+              "ref": "all legal"
+            }
+          ]
+        },
+        {
+          "gate_id": "A5",
+          "name": "count-up 归零",
+          "run_at": "2026-10-10T03:49:06.011126+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep countUp|animate-number"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "T1",
+          "name": "eyebrow 计数",
+          "run_at": "2026-10-10T03:49:06.052859+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "eyebrow class count vs <section> count"
+            },
+            {
+              "type": "output",
+              "ref": "eyebrow=0 sections=0 limit=1"
+            }
+          ]
+        },
+        {
+          "gate_id": "T2",
+          "name": "em-dash 零",
+          "run_at": "2026-10-10T03:49:06.053463+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "python: 扫描 *.html 含 U+2014 的文件数"
+            },
+            {
+              "type": "output",
+              "ref": "files_with_emdash=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-1",
+          "name": "动效白名单属性",
+          "run_at": "2026-10-10T03:49:06.066217+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep transition/animation props"
+            },
+            {
+              "type": "output",
+              "ref": "non-whitelist=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-4",
+          "name": "禁粒子背景",
+          "run_at": "2026-10-10T03:49:06.084246+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep 粒子背景库"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "V4",
+          "name": "拦截/放行记录",
+          "run_at": "2026-10-10T03:49:06.084306+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "本轮零拦截；回查最近含拦截的 run 处置已闭环（共查 0 条）"
+            }
+          ]
+        },
+        {
+          "gate_id": "G2",
+          "name": "G2",
+          "run_at": "2026-10-10T03:49:06.084314+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器 390px 量取触控目标，dry-run 未执行"
+            }
+          ]
+        },
+        {
+          "gate_id": "G3",
+          "name": "G3",
+          "run_at": "2026-10-10T03:49:06.084320+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 playwright 390px 渲染，dry-run 未执行（overflow-gate.sh 需 .qa-venv）"
+            }
+          ]
+        },
+        {
+          "gate_id": "G5",
+          "name": "G5",
+          "run_at": "2026-10-10T03:49:06.084324+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需人工中英逐项比对"
+            }
+          ]
+        },
+        {
+          "gate_id": "G6",
+          "name": "G6",
+          "run_at": "2026-10-10T03:49:06.084326+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需本次变更的数字联动上下文，dry-run 无变更单"
+            }
+          ]
+        },
+        {
+          "gate_id": "G9",
+          "name": "G9",
+          "run_at": "2026-10-10T03:49:06.084328+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器渲染复验"
+            }
+          ]
+        },
+        {
+          "gate_id": "M1",
+          "name": "M1",
+          "run_at": "2026-10-10T03:49:06.084331+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器关动效截帧目检"
+            }
+          ]
+        },
+        {
+          "gate_id": "M2",
+          "name": "M2",
+          "run_at": "2026-10-10T03:49:06.084334+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真机节流帧率测试；纯静态变更可记 N/A（本次 dry-run 按未验证）"
+            }
+          ]
+        },
+        {
+          "gate_id": "M3",
+          "name": "M3",
+          "run_at": "2026-10-10T03:49:06.084336+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需转场清单审计文档"
+            }
+          ]
+        },
+        {
+          "gate_id": "M4",
+          "name": "M4",
+          "run_at": "2026-10-10T03:49:06.084339+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 reduce-motion 三级复验"
+            }
+          ]
+        },
+        {
+          "gate_id": "A3",
+          "name": "A3",
+          "run_at": "2026-10-10T03:49:06.084368+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需按钮五态样式目检"
+            }
+          ]
+        },
+        {
+          "gate_id": "A4",
+          "name": "A4",
+          "run_at": "2026-10-10T03:49:06.084370+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需键盘 Tab 全程可达验证"
+            }
+          ]
+        },
+        {
+          "gate_id": "T3",
+          "name": "T3",
+          "run_at": "2026-10-10T03:49:06.084372+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需全页 CTA 意图人工去重"
+            }
+          ]
+        },
+        {
+          "gate_id": "T4",
+          "name": "T4",
+          "run_at": "2026-10-10T03:49:06.084384+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 logo 墙 alt+授权记录人工核对"
+            }
+          ]
+        },
+        {
+          "gate_id": "T5",
+          "name": "T5",
+          "run_at": "2026-10-10T03:49:06.084388+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器确认 CTA 文案无折行"
+            }
+          ]
+        },
+        {
+          "gate_id": "V1",
+          "name": "V1",
+          "run_at": "2026-10-10T03:49:06.084391+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需色盲模拟检查"
+            }
+          ]
+        },
+        {
+          "gate_id": "V2",
+          "name": "V2",
+          "run_at": "2026-10-10T03:49:06.084393+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需图表文字对比度取色"
+            }
+          ]
+        },
+        {
+          "gate_id": "V3",
+          "name": "V3",
+          "run_at": "2026-10-10T03:49:06.084395+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需图表文字替代摘要人工确认"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-2",
+          "name": "G12-2",
+          "run_at": "2026-10-10T03:49:06.084397+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "blur 面积需渲染测量"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-3",
+          "name": "G12-3",
+          "run_at": "2026-10-10T03:49:06.084399+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "LCP 增量需真机 Lighthouse"
+            }
+          ]
+        },
+        {
+          "gate_id": "G13",
+          "name": "G13",
+          "run_at": "2026-10-10T03:49:06.084402+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需变更单附模糊词翻译表，dry-run 无变更单"
+            }
+          ]
+        }
+      ],
+      "interceptions": [],
+      "machine_coverage": "11/32",
+      "summary": {
+        "pass": 11,
+        "fail": 0,
+        "waived": 21
+      }
+    },
+    {
+      "run_id": "missing-script-test",
+      "run_at": "2026-10-10T03:49:22.714606+00:00",
+      "change": "P0-1验收：外部脚本缺失场景",
+      "site_root": "demo/www",
+      "site_url": "https://vertciti.com",
+      "gates": [
+        {
+          "gate_id": "G1",
+          "name": "data-room 敏感扫描",
+          "run_at": "2026-10-10T03:49:20.307563+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "仓库 fallback secret-scan.py"
+            },
+            {
+              "type": "output",
+              "ref": "GATE PASS: 敏感扫描零命中（fallback 最小规则集：绝密/私钥/token 前缀）"
+            }
+          ]
+        },
+        {
+          "gate_id": "G4",
+          "name": "体积预算",
+          "run_at": "2026-10-10T03:49:20.309700+00:00",
+          "verdict": "fail",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "G4 无可用实现：未设 QA_GATES_SIZE_GATE 且 fallback 缺失——拒绝误判 pass，直接判 fail"
+            }
+          ]
+        },
+        {
+          "gate_id": "G7",
+          "name": "CSP hash round-trip",
+          "run_at": "2026-10-10T03:49:20.310512+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "all *.html inline <script> sha256 vs vercel.json script-src"
+            },
+            {
+              "type": "note",
+              "ref": "vercel.json 缺失，未验证"
+            }
+          ]
+        },
+        {
+          "gate_id": "G8",
+          "name": "生产可达性",
+          "run_at": "2026-10-10T03:49:22.649330+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "curl https://vertciti.com/ -> HTTP code"
+            },
+            {
+              "type": "output",
+              "ref": "HTTP 200"
+            }
+          ]
+        },
+        {
+          "gate_id": "A1",
+          "name": "字阶命中",
+          "run_at": "2026-10-10T03:49:22.658994+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep font-size 13/15/17/19px"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "A2",
+          "name": "8pt 间距",
+          "run_at": "2026-10-10T03:49:22.671466+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep margin/padding px values"
+            },
+            {
+              "type": "output",
+              "ref": "all legal"
+            }
+          ]
+        },
+        {
+          "gate_id": "A5",
+          "name": "count-up 归零",
+          "run_at": "2026-10-10T03:49:22.678978+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep countUp|animate-number"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "T1",
+          "name": "eyebrow 计数",
+          "run_at": "2026-10-10T03:49:22.696658+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "eyebrow class count vs <section> count"
+            },
+            {
+              "type": "output",
+              "ref": "eyebrow=0 sections=0 limit=1"
+            }
+          ]
+        },
+        {
+          "gate_id": "T2",
+          "name": "em-dash 零",
+          "run_at": "2026-10-10T03:49:22.697776+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "python: 扫描 *.html 含 U+2014 的文件数"
+            },
+            {
+              "type": "output",
+              "ref": "files_with_emdash=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-1",
+          "name": "动效白名单属性",
+          "run_at": "2026-10-10T03:49:22.704346+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep transition/animation props"
+            },
+            {
+              "type": "output",
+              "ref": "non-whitelist=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-4",
+          "name": "禁粒子背景",
+          "run_at": "2026-10-10T03:49:22.714483+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep 粒子背景库"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "V4",
+          "name": "拦截/放行记录",
+          "run_at": "2026-10-10T03:49:22.714522+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "interception",
+              "ref": "拦截 G4 体积预算：G4 无可用实现：未设 QA_GATES_SIZE_GATE 且 fallback 缺失——拒绝误判 pass，直接判 fail ｜处置状态：pending（见本 run interceptions[G4]）"
+            },
+            {
+              "type": "note",
+              "ref": "本轮真实拦截 1 项，全部已记入 interceptions 并附证据引用"
+            }
+          ]
+        },
+        {
+          "gate_id": "G2",
+          "name": "G2",
+          "run_at": "2026-10-10T03:49:22.714529+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器 390px 量取触控目标，dry-run 未执行"
+            }
+          ]
+        },
+        {
+          "gate_id": "G3",
+          "name": "G3",
+          "run_at": "2026-10-10T03:49:22.714534+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 playwright 390px 渲染，dry-run 未执行（overflow-gate.sh 需 .qa-venv）"
+            }
+          ]
+        },
+        {
+          "gate_id": "G5",
+          "name": "G5",
+          "run_at": "2026-10-10T03:49:22.714537+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需人工中英逐项比对"
+            }
+          ]
+        },
+        {
+          "gate_id": "G6",
+          "name": "G6",
+          "run_at": "2026-10-10T03:49:22.714546+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需本次变更的数字联动上下文，dry-run 无变更单"
+            }
+          ]
+        },
+        {
+          "gate_id": "G9",
+          "name": "G9",
+          "run_at": "2026-10-10T03:49:22.714548+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器渲染复验"
+            }
+          ]
+        },
+        {
+          "gate_id": "M1",
+          "name": "M1",
+          "run_at": "2026-10-10T03:49:22.714551+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器关动效截帧目检"
+            }
+          ]
+        },
+        {
+          "gate_id": "M2",
+          "name": "M2",
+          "run_at": "2026-10-10T03:49:22.714557+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真机节流帧率测试；纯静态变更可记 N/A（本次 dry-run 按未验证）"
+            }
+          ]
+        },
+        {
+          "gate_id": "M3",
+          "name": "M3",
+          "run_at": "2026-10-10T03:49:22.714559+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需转场清单审计文档"
+            }
+          ]
+        },
+        {
+          "gate_id": "M4",
+          "name": "M4",
+          "run_at": "2026-10-10T03:49:22.714562+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 reduce-motion 三级复验"
+            }
+          ]
+        },
+        {
+          "gate_id": "A3",
+          "name": "A3",
+          "run_at": "2026-10-10T03:49:22.714564+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需按钮五态样式目检"
+            }
+          ]
+        },
+        {
+          "gate_id": "A4",
+          "name": "A4",
+          "run_at": "2026-10-10T03:49:22.714566+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需键盘 Tab 全程可达验证"
+            }
+          ]
+        },
+        {
+          "gate_id": "T3",
+          "name": "T3",
+          "run_at": "2026-10-10T03:49:22.714568+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需全页 CTA 意图人工去重"
+            }
+          ]
+        },
+        {
+          "gate_id": "T4",
+          "name": "T4",
+          "run_at": "2026-10-10T03:49:22.714570+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 logo 墙 alt+授权记录人工核对"
+            }
+          ]
+        },
+        {
+          "gate_id": "T5",
+          "name": "T5",
+          "run_at": "2026-10-10T03:49:22.714574+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器确认 CTA 文案无折行"
+            }
+          ]
+        },
+        {
+          "gate_id": "V1",
+          "name": "V1",
+          "run_at": "2026-10-10T03:49:22.714577+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需色盲模拟检查"
+            }
+          ]
+        },
+        {
+          "gate_id": "V2",
+          "name": "V2",
+          "run_at": "2026-10-10T03:49:22.714579+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需图表文字对比度取色"
+            }
+          ]
+        },
+        {
+          "gate_id": "V3",
+          "name": "V3",
+          "run_at": "2026-10-10T03:49:22.714581+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需图表文字替代摘要人工确认"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-2",
+          "name": "G12-2",
+          "run_at": "2026-10-10T03:49:22.714583+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "blur 面积需渲染测量"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-3",
+          "name": "G12-3",
+          "run_at": "2026-10-10T03:49:22.714586+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "LCP 增量需真机 Lighthouse"
+            }
+          ]
+        },
+        {
+          "gate_id": "G13",
+          "name": "G13",
+          "run_at": "2026-10-10T03:49:22.714588+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需变更单附模糊词翻译表，dry-run 无变更单"
+            }
+          ]
+        }
+      ],
+      "interceptions": [
+        {
+          "gate_id": "G4",
+          "name": "体积预算",
+          "evidence_refs": [
+            "G4 无可用实现：未设 QA_GATES_SIZE_GATE 且 fallback 缺失——拒绝误判 pass，直接判 fail"
+          ],
+          "status": "closed",
+          "disposition_history": [
+            {
+              "at": "2026-10-10T03:49:33.451946+00:00",
+              "action": "复验",
+              "result": "closed",
+              "note": "P0-1验收测试run：外部脚本缺失场景验证通过（G4判fail未误判pass），非真实发布，闭环"
+            }
+          ]
+        }
+      ],
+      "machine_coverage": "11/32",
+      "summary": {
+        "pass": 10,
+        "fail": 1,
+        "waived": 21
+      }
+    },
+    {
+      "run_id": "missing-script-test2",
+      "run_at": "2026-10-10T03:49:35.529094+00:00",
+      "change": "P0-1验收：外部脚本缺失场景（消息准确性复验）",
+      "site_root": "demo/www",
+      "site_url": "https://vertciti.com",
+      "gates": [
+        {
+          "gate_id": "G1",
+          "name": "data-room 敏感扫描",
+          "run_at": "2026-10-10T03:49:33.683494+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "仓库 fallback secret-scan.py"
+            },
+            {
+              "type": "output",
+              "ref": "GATE PASS: 敏感扫描零命中（fallback 最小规则集：绝密/私钥/token 前缀）"
+            }
+          ]
+        },
+        {
+          "gate_id": "G4",
+          "name": "体积预算",
+          "run_at": "2026-10-10T03:49:33.683570+00:00",
+          "verdict": "fail",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "G4 无可用实现：环境变量 QA_GATES_SIZE_GATE 指向缺失路径 /nonexistent/size-gate.sh——拒绝误判 pass，直接判 fail"
+            }
+          ]
+        },
+        {
+          "gate_id": "G7",
+          "name": "CSP hash round-trip",
+          "run_at": "2026-10-10T03:49:33.688013+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "all *.html inline <script> sha256 vs vercel.json script-src"
+            },
+            {
+              "type": "note",
+              "ref": "vercel.json 缺失，未验证"
+            }
+          ]
+        },
+        {
+          "gate_id": "G8",
+          "name": "生产可达性",
+          "run_at": "2026-10-10T03:49:35.498899+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "curl https://vertciti.com/ -> HTTP code"
+            },
+            {
+              "type": "output",
+              "ref": "HTTP 200"
+            }
+          ]
+        },
+        {
+          "gate_id": "A1",
+          "name": "字阶命中",
+          "run_at": "2026-10-10T03:49:35.503461+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep font-size 13/15/17/19px"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "A2",
+          "name": "8pt 间距",
+          "run_at": "2026-10-10T03:49:35.508983+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep margin/padding px values"
+            },
+            {
+              "type": "output",
+              "ref": "all legal"
+            }
+          ]
+        },
+        {
+          "gate_id": "A5",
+          "name": "count-up 归零",
+          "run_at": "2026-10-10T03:49:35.513558+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep countUp|animate-number"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "T1",
+          "name": "eyebrow 计数",
+          "run_at": "2026-10-10T03:49:35.520615+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "eyebrow class count vs <section> count"
+            },
+            {
+              "type": "output",
+              "ref": "eyebrow=0 sections=0 limit=1"
+            }
+          ]
+        },
+        {
+          "gate_id": "T2",
+          "name": "em-dash 零",
+          "run_at": "2026-10-10T03:49:35.521321+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "python: 扫描 *.html 含 U+2014 的文件数"
+            },
+            {
+              "type": "output",
+              "ref": "files_with_emdash=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-1",
+          "name": "动效白名单属性",
+          "run_at": "2026-10-10T03:49:35.525802+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep transition/animation props"
+            },
+            {
+              "type": "output",
+              "ref": "non-whitelist=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-4",
+          "name": "禁粒子背景",
+          "run_at": "2026-10-10T03:49:35.528954+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "cmd",
+              "ref": "grep 粒子背景库"
+            },
+            {
+              "type": "output",
+              "ref": "hits=0"
+            }
+          ]
+        },
+        {
+          "gate_id": "V4",
+          "name": "拦截/放行记录",
+          "run_at": "2026-10-10T03:49:35.528991+00:00",
+          "verdict": "pass",
+          "evidence": [
+            {
+              "type": "interception",
+              "ref": "拦截 G4 体积预算：G4 无可用实现：环境变量 QA_GATES_SIZE_GATE 指向缺失路径 /nonexistent/size-gate.sh——拒绝误判 pass，直接判 fail ｜处置状态：pending（见本 run interceptions[G4]）"
+            },
+            {
+              "type": "note",
+              "ref": "本轮真实拦截 1 项，全部已记入 interceptions 并附证据引用"
+            }
+          ]
+        },
+        {
+          "gate_id": "G2",
+          "name": "G2",
+          "run_at": "2026-10-10T03:49:35.529000+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器 390px 量取触控目标，dry-run 未执行"
+            }
+          ]
+        },
+        {
+          "gate_id": "G3",
+          "name": "G3",
+          "run_at": "2026-10-10T03:49:35.529005+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 playwright 390px 渲染，dry-run 未执行（overflow-gate.sh 需 .qa-venv）"
+            }
+          ]
+        },
+        {
+          "gate_id": "G5",
+          "name": "G5",
+          "run_at": "2026-10-10T03:49:35.529008+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需人工中英逐项比对"
+            }
+          ]
+        },
+        {
+          "gate_id": "G6",
+          "name": "G6",
+          "run_at": "2026-10-10T03:49:35.529010+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需本次变更的数字联动上下文，dry-run 无变更单"
+            }
+          ]
+        },
+        {
+          "gate_id": "G9",
+          "name": "G9",
+          "run_at": "2026-10-10T03:49:35.529013+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器渲染复验"
+            }
+          ]
+        },
+        {
+          "gate_id": "M1",
+          "name": "M1",
+          "run_at": "2026-10-10T03:49:35.529016+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器关动效截帧目检"
+            }
+          ]
+        },
+        {
+          "gate_id": "M2",
+          "name": "M2",
+          "run_at": "2026-10-10T03:49:35.529018+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真机节流帧率测试；纯静态变更可记 N/A（本次 dry-run 按未验证）"
+            }
+          ]
+        },
+        {
+          "gate_id": "M3",
+          "name": "M3",
+          "run_at": "2026-10-10T03:49:35.529020+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需转场清单审计文档"
+            }
+          ]
+        },
+        {
+          "gate_id": "M4",
+          "name": "M4",
+          "run_at": "2026-10-10T03:49:35.529023+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 reduce-motion 三级复验"
+            }
+          ]
+        },
+        {
+          "gate_id": "A3",
+          "name": "A3",
+          "run_at": "2026-10-10T03:49:35.529025+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需按钮五态样式目检"
+            }
+          ]
+        },
+        {
+          "gate_id": "A4",
+          "name": "A4",
+          "run_at": "2026-10-10T03:49:35.529027+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需键盘 Tab 全程可达验证"
+            }
+          ]
+        },
+        {
+          "gate_id": "T3",
+          "name": "T3",
+          "run_at": "2026-10-10T03:49:35.529029+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需全页 CTA 意图人工去重"
+            }
+          ]
+        },
+        {
+          "gate_id": "T4",
+          "name": "T4",
+          "run_at": "2026-10-10T03:49:35.529036+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需 logo 墙 alt+授权记录人工核对"
+            }
+          ]
+        },
+        {
+          "gate_id": "T5",
+          "name": "T5",
+          "run_at": "2026-10-10T03:49:35.529039+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需真浏览器确认 CTA 文案无折行"
+            }
+          ]
+        },
+        {
+          "gate_id": "V1",
+          "name": "V1",
+          "run_at": "2026-10-10T03:49:35.529043+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需色盲模拟检查"
+            }
+          ]
+        },
+        {
+          "gate_id": "V2",
+          "name": "V2",
+          "run_at": "2026-10-10T03:49:35.529045+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需图表文字对比度取色"
+            }
+          ]
+        },
+        {
+          "gate_id": "V3",
+          "name": "V3",
+          "run_at": "2026-10-10T03:49:35.529047+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需图表文字替代摘要人工确认"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-2",
+          "name": "G12-2",
+          "run_at": "2026-10-10T03:49:35.529050+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "blur 面积需渲染测量"
+            }
+          ]
+        },
+        {
+          "gate_id": "G12-3",
+          "name": "G12-3",
+          "run_at": "2026-10-10T03:49:35.529052+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "LCP 增量需真机 Lighthouse"
+            }
+          ]
+        },
+        {
+          "gate_id": "G13",
+          "name": "G13",
+          "run_at": "2026-10-10T03:49:35.529054+00:00",
+          "verdict": "waived",
+          "evidence": [
+            {
+              "type": "note",
+              "ref": "需变更单附模糊词翻译表，dry-run 无变更单"
+            }
+          ]
+        }
+      ],
+      "interceptions": [
+        {
+          "gate_id": "G4",
+          "name": "体积预算",
+          "evidence_refs": [
+            "G4 无可用实现：环境变量 QA_GATES_SIZE_GATE 指向缺失路径 /nonexistent/size-gate.sh——拒绝误判 pass，直接判 fail"
+          ],
+          "status": "closed",
+          "disposition_history": [
+            {
+              "at": "2026-10-10T03:49:38.851895+00:00",
+              "action": "复验",
+              "result": "closed",
+              "note": "P0-1验收测试run：消息准确性复验通过，非真实发布，闭环"
+            }
+          ]
+        }
+      ],
+      "machine_coverage": "11/32",
+      "summary": {
+        "pass": 10,
+        "fail": 1,
+        "waived": 21
+      }
     }
   ]
 }

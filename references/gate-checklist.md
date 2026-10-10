@@ -1,9 +1,10 @@
-# 网站 QA 门禁检查表（G1–G9 ＋ G14 ＋ M1–M4 ＋ A++ 硬扫 ＋ G13）
+# 网站 QA 门禁检查表（G1–G9 ＋ G14 ＋ M1–M5 ＋ A++ 硬扫 ＋ G13）
 
-> 配套 skill：website-qa-gates ｜ 版本 v1.2 ｜ 2026-10-06（新增 G14 "AI 初筛＋人工终审"双轮制；G13 操作细则保留）
-> 口径来源：本团队网站治理体系（G1–G9）、动效标杆深研（M1–M4）、A++ 审美标准。用自己的话转写。
+> 配套 skill：website-qa-gates ｜ 版本 v1.3 ｜ 2026-10-07（新增 M5 "微交互手感"门禁 MV351；
+> G14 仍为"AI 初筛＋人工终审"双轮制——深研报告误称 G14 为动效门禁，实际动效门禁为 M1–M4，M5 顺延）
+> 口径来源：本团队网站治理体系（G1–G9）、动效标杆深研（M1–M5）、A++ 审美标准。用自己的话转写。
 
-**总规则**：每批发布必跑全部十四项门禁＋五项硬扫，任一 FAIL 停发，返工复验。质检组抽查留痕。
+**总规则**：每批发布必跑全部十五项门禁＋五项硬扫，任一 FAIL 停发，返工复验。质检组抽查留痕。
 
 ---
 
@@ -12,26 +13,26 @@
 ### G1 · data-room 敏感信息扫描
 
 - 做什么：扫描发布包里的资料室文件，查"绝密"字样、未来日期章、私钥、token、密钥等不应公开的内容。
-- 命令：`bash ~/workspace/vertcity/security-watch/data-room-gate.sh`
+- 命令（P0-1 可移植化）：`QA_GATES_SECURITY_GATE` 环境变量指向外部扫描脚本；未设置时 runner 自动用仓库内 `tools/fallback/secret-scan.py`（纯 stdlib 最小规则集：绝密字样/私钥块/高置信 token 前缀）。
 - PASS 标准：零 FAIL 项。命中公开联系邮箱等为 WARN——可发布，但须人工复核确认是应公开项。
 
 ### G2 · 触控目标 ≥44×44
 
 - 做什么：390px 视口下量取所有可见可交互元素（链接/按钮/输入框等）的触控尺寸。
-- 命令：`bash ~/workspace/vertcity/deliverables/qa-gates/touch-target-check.sh [URL]`
+- 命令：真浏览器实测（Playwright/人工）；仓库内无自带实现时记 waived（P1-2 规划中）。
 - PASS 标准：exit 0 且输出 `RESULT: [PASS]`；全部可见可交互元素 ≥44×44。纯文本内联链接豁免，单独列备查。
 - 基线：2026-09-28 实测 748 个元素全 PASS。新路由/新组件上线后必须加测，不许沿用旧基线。
 
 ### G3 · 390px 零横向截断
 
 - 做什么：22 个路由 × 中英双语 @390px，检查有无元素被横向裁剪。注意 `overflow-x:hidden` 会静默裁剪，常规检测失明，必须用专用脚本。
-- 命令：`bash ~/workspace/vertcity/deliverables/qa-gates/overflow-gate.sh [SITE_ROOT]`
-- PASS 标准：exit 0 且输出 `OVERFLOW GATE: PASS`。
+- 命令：真浏览器渲染实测；仓库内无自带实现时记 waived（P1-2 规划中）。
+- PASS 标准：`OVERFLOW GATE: PASS`。
 
 ### G4 · 体积预算
 
 - 做什么：卡首屏体积与核心性能指标，防止变更把页面养胖。
-- 命令：`bash ~/workspace/vertcity/deliverables/qa-gates/size-gate.sh`
+- 命令（P0-1 可移植化）：`QA_GATES_SIZE_GATE` 环境变量指向外部体积脚本；未设置时 runner 自动用仓库内 `tools/fallback/size-budget.py`（纯 stdlib：单文件 1.2MB 红线 FAIL / 1.0MB 黄线 WARN）。
 - PASS 标准：移动端首屏 ≤1.5MB；LCP ≤2.5s、CLS ≤0.1、INP ≤200ms（真机 Lighthouse）。
 
 ### G5 · 中英镜像一致性
@@ -105,6 +106,27 @@
   2. 替代后信息完整——M1 的静态帧检查在 reduce 模式下重跑一遍；
   3. 键盘/读屏用户不受影响。
 - PASS 标准：三级全部通过。不达标＝动效方案打回。
+
+### M5 · 微交互手感（micro-interaction 手感，MV351，2026-10-07）
+
+> 编号说明：深研报告称"G14 动效门禁"，实际 G14＝"AI 初筛＋人工终审"双轮制（N6），
+> 动效门禁是 M1–M4。本项按动效门禁家族顺延为 M5，避免编号冲突。
+
+- 做什么：任一用户触发的按钮 micro-interaction（按压/点赞/提交/开关/长按确认），
+  必须把"手感"翻译成可验证、可调参的工程量并实测，不许只写"好看/丝滑"类形容词。
+  参数约束库见 frontend-design SKILL §4b。
+- 三选一落地（任选其一，参数必须写进代码注释或设计说明）：
+  1. **弹簧物理参数**：stiffness/damping（或等价的 cubic-bezier/linear() 弹簧曲线）落盘；
+     按下 100ms 内有反馈（N1）；松开带可测量的 overshoot 回弹；只动 transform/opacity。
+  2. **提交按钮三态**：显式状态机 idle→loading→success（错误态必须有 revert 路径）；
+     提交中 disabled 防重复提交；三态文案＋aria-live；宽度 tween 防顶开旁边元素。
+  3. **粒子/次级反馈**：弹起＋粒子＋即时状态反馈三件套（badge 轻顶/文案切换）；
+     总时长 100–250ms；粒子在 `prefers-reduced-motion` 下关闭。
+     注：数字滚动（count-up）按 D182 永久禁用，**不**在本项三件套内。
+- PASS 标准：① 参数注释/设计说明可查；② 实测证据三选一：弹簧过冲采样值 / 三态录屏 /
+  粒子三件套录屏；③ M4（reduced-motion）同步通过；④ 每个 micro-interaction 过 D182
+  "一句话目的判据"（只许四类：层级引导/叙事推进/操作反馈/状态变化）。
+- 失败含义：只有"会变色的方块"式动效（UNIFORM 300ms EASE、无参数、无状态机）＝无手感，打回。
 
 ---
 

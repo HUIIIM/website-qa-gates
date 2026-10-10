@@ -7,14 +7,18 @@
 
 scorecard:
   name: vertciti-website-scorecard
-  version: v1.0
-  date: 2026-10-02
+  version: v1.1
+  date: 2026-10-10
   base_standard: deliverables/website-excellence-standard-v1-2026-09-29.md
   dimension_mapping_note: >
     扩展维度全部映射进卓越标准六维：visual_craft + motion_quality -> 维一；
     conversion_funnel -> 维二；ai_readability -> 维四；accessibility -> 维五。
   total_weight: 100
-  scoring_formula: total = sum(dimension.score * dimension.weight) / 100
+  scoring_formula: total = sum(score_d * w_d for d in applicable_dimensions) / sum(w_d for d in applicable_dimensions)
+  scoring_formula_note: >
+    N/A（不适用）维度直接从分母剔除权重，不按满分计入——"不涉及"不等于"满分"。
+    旧公式 total = sum(score_d * w_d) / 100（N/A 按满分）已于 v1.1 废止：
+    它让 waived 越多的变更得分越高（27 分白送可把 B 抬成 A），与"低于 A 自动立案"正面冲突。
   dimension_scoring_formula: dimension.score = sum(check.points_earned)  # checks 满分 100
   grades:
     S: { min: 95, label: 卓越 }
@@ -162,6 +166,9 @@ dimensions:
 # - v1.0 2026-10-02: 初版。底座=卓越标准 v1.0 六维；新增 5 维度映射进六维；
 #   权重总和 100；等级线 S>=95/A++>=90/A>=85/B>=70/C<70；<A 自动立案。
 changelog:
+  - version: v1.1
+    date: 2026-10-10
+    note: P1-5 N/A 计分修复——总分公式改为权重剔除（Σ适用维度得分×权重/Σ适用维度权重），N/A 不再按满分白送分；v1.0 旧公式废止
   - version: v1.0
     date: 2026-10-02
     note: 初版（D485 已生效）

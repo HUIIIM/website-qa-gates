@@ -2,6 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.2.1-blue.svg)](SKILL.md)
+[![QA Gates](https://github.com/HUIIIM/website-qa-gates/actions/workflows/qa-gates.yml/badge.svg)](https://github.com/HUIIIM/website-qa-gates/actions/workflows/qa-gates.yml)
 
 **A website is the company's proof of caliber. This skill runs the pre-release gauntlet: per-gate pass/fail verdicts with evidence, an 11-dimension weighted score with a grade, and automatic issue filing when it falls below A-grade — so nothing ships on "looks fine to me."**
 
