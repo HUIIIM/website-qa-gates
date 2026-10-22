@@ -4,6 +4,9 @@
 [![Version](https://img.shields.io/badge/version-1.2.1-blue.svg)](SKILL.md)
 [![QA Gates](https://github.com/HUIIIM/website-qa-gates/actions/workflows/qa-gates.yml/badge.svg)](https://github.com/HUIIIM/website-qa-gates/actions/workflows/qa-gates.yml)
 
+> **状态 / Status:** active（早期，单人维护 / early, single maintainer）· v1.4.0（见 `SKILL.md`）。CI 每次 push/PR 跑 demo 门禁；2026-10-22 本地运行 `pass=11 fail=0 waived=21`，即 32 个门禁中 21 个需要真实浏览器、人工核对或外部材料，在 demo 中标为 `waived`。没有单元测试套件。产品一页纸 / one-pager：[docs/PRODUCT.md](docs/PRODUCT.md) · [CHANGELOG](CHANGELOG.md)
+> CI runs the demo gates on every push/PR; local run on 2026-10-22: 11 pass, 0 fail, 21 of 32 gates waived (need a real browser, manual review or external materials). No unit-test suite.
+
 **A website is the company's proof of caliber. This skill runs the pre-release gauntlet: per-gate pass/fail verdicts with evidence, an 11-dimension weighted score with a grade, and automatic issue filing when it falls below A-grade — so nothing ships on "looks fine to me."**
 
 [Quick start](#30-second-quick-start) · [What it delivers](#what-it-delivers) · [Demo](#demo) · [FAQ](#faq)
@@ -117,13 +120,21 @@ The gate runner works against a site root or URL; browser-dependent gates need a
 
 Issues and PRs welcome. Gate changes need a worked dry-run in `evals/` plus a `coverage-ledger.json` entry — paper proposals without a run don't merge.
 
-## License
+## 安全 / Security
 
-| Module | License | Plain meaning |
+本仓库目前没有 `SECURITY.md`。发现安全问题（例如门禁脚本误判、密钥泄露）时，请优先使用 GitHub 的私密漏洞报告（仓库 Security 标签页 → Report a vulnerability，前提是仓库已开启该功能）；未开启时请开一个不含敏感细节的 issue，请求私下联系方式。请不要在公开 issue 中贴出密钥或利用细节。CI 中 `gitleaks` 工作流对每次 push/PR 及每晚做密钥扫描。
+
+This repo has no `SECURITY.md` yet. Please report security issues through GitHub private vulnerability reporting (Security tab → Report a vulnerability, if enabled for the repo); otherwise open an issue without sensitive details and ask for a private channel. Do not post secrets or exploit details publicly. The `gitleaks` workflow scans for secrets on every push, PR and nightly.
+
+## 许可证 / License
+
+MIT License（见 [LICENSE](LICENSE)，Copyright (c) 2026 Jiahui Miao）。
+
+| 范围 / Module | 许可证 / License | 白话 / Plain meaning |
 |---|---|---|
-| All files | MIT | Commercial use OK, modify OK, attribution required |
+| 全部文件 / All files | MIT | 可商用、可修改，需保留版权声明 / Commercial use OK, modify OK, attribution required |
 
-See [LICENSE](LICENSE).
+`dna.css` 为从 [HUIIIM/.github](https://github.com/HUIIIM/.github) `design/dist/dna.css` 原样引入的 vertciti DNA 样式表 / vendored unmodified from HUIIIM/.github.
 
 ## Author
 
