@@ -67,7 +67,14 @@ main:focus { outline: none; }
 }
 .dna-btn:hover { background: transparent; color: var(--fg); }
 .dna-btn:active { transform: translateY(1px); }
-.dna-btn[disabled], .dna-btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; transform: none; }
+/* Disabled = clearly "off" AND still readable: never opacity (it took labels to ~2:1, worse on iOS).
+   !important so variants (--secondary, :hover …) cannot mix their colours in. */
+.dna-btn[disabled], .dna-btn[aria-disabled="true"], .dna-btn[disabled]:hover, .dna-btn[aria-disabled="true"]:hover,
+.dna-seg button[disabled], .dna-seg button[disabled]:hover, .dna-tab[aria-disabled="true"] {
+  opacity: 1 !important; cursor: not-allowed; transform: none !important;
+  background: var(--soft) !important; color: var(--fg-2) !important; -webkit-text-fill-color: var(--fg-2);
+  border: 2px dashed var(--fg-3) !important;
+}
 .dna-btn--secondary { background: transparent; color: var(--fg); }
 .dna-btn--secondary:hover { background: var(--strong); color: var(--bg); }
 .dna-btn--text { background: transparent; border-color: transparent; color: var(--fg); padding: 0 4px; text-decoration: underline; text-decoration-color: var(--orange); text-decoration-thickness: 2px; }
@@ -75,9 +82,13 @@ main:focus { outline: none; }
 
 .dna-card { position: relative; background: var(--card); border-top: 4px solid var(--strong); border-radius: var(--radius); padding: 28px; }
 .dna-card--flat { border-top-width: 1px; border-top-color: var(--line); }
-.dna-card--ink { background: #000; color: #fff; border-top-color: #000; }
-.dna-card--ink .dna-eyebrow, .dna-card--ink .dna-hint { color: #DEDEDE; }
-.dna-card--accent { background: var(--yellow); color: #000; border-top-color: #000; }
+/* Inverse surfaces re-declare the theme tokens locally, so EVERYTHING inside (headings, eyebrows, buttons,
+   inputs, links) follows the surface, not the page theme. Hard-coding only some children is how ink-on-ink
+   (1:1) and white-on-yellow (1.5:1) headings shipped before. */
+.dna-card--ink { --bg: #000; --fg: #fff; --fg-2: #DEDEDE; --fg-3: #B5B5B5; --strong: #fff; --soft: #161616; --line: #3A3A3A;
+  background: #000; color: #fff; border-top-color: #000; }
+.dna-card--accent { --bg: #FFCE00; --fg: #000; --fg-2: #222; --fg-3: #3F3F3F; --strong: #000; --soft: #F0C200; --line: #000;
+  background: var(--yellow); color: #000; border-top-color: #000; }
 .dna-card--pop { transition: transform var(--dur-base) ease, box-shadow var(--dur-base) ease; }
 .dna-card--pop:hover { transform: translateY(-2px); box-shadow: var(--shadow-pop); }
 
@@ -90,6 +101,11 @@ main:focus { outline: none; }
   border: 1px solid var(--fg-3); border-radius: var(--radius);
 }
 .dna-input:hover, .dna-select:hover, .dna-textarea:hover { border-color: var(--fg); }
+.dna-input::placeholder, .dna-textarea::placeholder { color: var(--fg-3); -webkit-text-fill-color: var(--fg-3); opacity: 1; }
+.dna-input:disabled, .dna-select:disabled, .dna-textarea:disabled {
+  opacity: 1 !important; cursor: not-allowed; background: var(--soft); border-style: dashed;
+  color: var(--fg-2); -webkit-text-fill-color: var(--fg-2);
+}
 .dna-input[aria-invalid="true"], .dna-textarea[aria-invalid="true"] { border-color: var(--bad); box-shadow: inset 0 0 0 1px var(--bad); }
 
 .dna-badge { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; font-size: 12px; font-weight: 700; letter-spacing: .02em; border: 1px solid currentColor; border-radius: var(--radius); }
@@ -160,6 +176,13 @@ html[lang^="zh"] .dna-eyebrow { text-transform: none; letter-spacing: .08em; }
 .dna-dot--warn { background: var(--warn); box-shadow: inset 0 0 0 1px rgba(0,0,0,.25); }
 .dna-dot--bad { background: var(--bad); }
 .dna-dot--plan { background: transparent; box-shadow: inset 0 0 0 1.5px var(--fg-3); }
+/* Evidence tier (standards/EVIDENCE.md): verified / estimate / demo / missing. Text always rides along. */
+.dna-ev { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; line-height: 1.4; color: var(--fg-2); }
+.dna-ev::before { content: ""; width: 8px; height: 8px; flex-shrink: 0; background: var(--fg-3); }
+.dna-ev--verified::before { background: var(--ok); }
+.dna-ev--demo::before { background: var(--warn); box-shadow: inset 0 0 0 1px rgba(0,0,0,.25); }
+.dna-ev--missing { color: var(--fg-3); }
+.dna-ev--missing::before { background: transparent; box-shadow: inset 0 0 0 1.5px var(--fg-3); }
 .dna-status { display: inline-flex; align-items: center; gap: 8px; }
 
 /* Segmented control: square joined buttons, selected = ink */
