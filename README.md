@@ -1,141 +1,94 @@
 # website-qa-gates
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.2.1-blue.svg)](SKILL.md)
-[![QA Gates](https://github.com/HUIIIM/website-qa-gates/actions/workflows/qa-gates.yml/badge.svg)](https://github.com/HUIIIM/website-qa-gates/actions/workflows/qa-gates.yml)
+A vertciti skill for pre-release QA of website changes: it returns per-gate pass / fail verdicts with
+evidence, an 11-dimension weighted score with a grade, and a remediation record when a release falls below
+grade A, for teams that ship changes to a marketing or product site.
 
-> **状态 / Status:** active（早期，单人维护 / early, single maintainer）· v1.4.0（见 `SKILL.md`）。CI 每次 push/PR 跑 demo 门禁；2026-10-22 本地运行 `pass=11 fail=0 waived=21`，即 32 个门禁中 21 个需要真实浏览器、人工核对或外部材料，在 demo 中标为 `waived`。没有单元测试套件。产品一页纸 / one-pager：[docs/PRODUCT.md](docs/PRODUCT.md) · [CHANGELOG](CHANGELOG.md)
-> CI runs the demo gates on every push/PR; local run on 2026-10-22: 11 pass, 0 fail, 21 of 32 gates waived (need a real browser, manual review or external materials). No unit-test suite.
+| | |
+|---|---|
+| Status | active · early, single maintainer — v1.4.0 (version from [SKILL.md](SKILL.md)); CI runs the demo gates on every push and pull request; local run on 2026-10-22: 11 pass, 0 fail, 21 of 32 gates `waived` (they need a real browser, manual review or external materials); no unit-test suite |
+| Type | vertciti skill (agent skill defined in [SKILL.md](SKILL.md)) with a Python gate runner ([`tools/ledger-run.py`](tools/ledger-run.py)) |
+| Install / use | Load `SKILL.md` as a skill in your agent; run the gates locally with `bash demo/run.sh` |
+| Licence | MIT ([LICENSE](LICENSE)), Copyright (c) 2026 Jiahui Miao · bundled Nunito Sans fonts under the SIL OFL ([fonts/OFL.txt](fonts/OFL.txt)) |
+| Languages | README in English · skill text, checklists and demo pages in 简体中文 |
+| Contact | Security: see [Security](#security) · Product: [vertciti.com](https://vertciti.com) |
 
-**A website is the company's proof of caliber. This skill runs the pre-release gauntlet: per-gate pass/fail verdicts with evidence, an 11-dimension weighted score with a grade, and automatic issue filing when it falls below A-grade — so nothing ships on "looks fine to me."**
+## Overview
 
-[Quick start](#30-second-quick-start) · [What it delivers](#what-it-delivers) · [Demo](#demo) · [FAQ](#faq)
+Manual QA before a website release tends to end with someone looking at the page and saying it is fine.
+website-qa-gates replaces that with a gate list: each gate has a pass criterion and must cite evidence, and
+any FAIL blocks the release. Gates that cannot be verified by machine are marked `waived` with the reason;
+a waived gate is reported, never counted as a pass. Every run is appended to
+[`coverage-ledger.json`](coverage-ledger.json).
 
-A [Vertciti Skill Pack](https://vertciti.com) for pre-release quality gates on website changes. One change description in, three things out.
+Product one-pager: [docs/PRODUCT.md](docs/PRODUCT.md) · Changelog: [CHANGELOG.md](CHANGELOG.md)
 
-Built for [Miao](https://vertciti.com) (Jiahui Miao) — N=1 founder IP infrastructure.
+## Capabilities
 
-## The real problem it solves
+| Output | What it contains |
+|---|---|
+| Gate verdicts | Release gates G1–G9 and G14, plus five motion gates M1–M5, each PASS / FAIL / conditional with evidence |
+| 11-dimension score | Weighted 100-point model (real-browser verification 18, visual craft 12, CTA closure 12, performance budget 12, and seven more). Grades: S ≥95 · A++ ≥90 · A ≥85 · B ≥70 · C <70 |
+| Remediation record | Filed when the grade is below A or any gate fails, with an owner and a default 24-hour deadline |
 
-Manual QA before a website release drifts into vibes: somebody eyeballs it, says fine, and the launch carries a broken footer on mobile or an orphaned CTA that leads nowhere. website-qa-gates replaces the eyeball with a gate list — each gate has a pass criterion and must cite evidence. Browser-dependent gates that can't be machine-verified are honestly marked `waived`, never faked into a pass.
+```
+Input: change brief (what changed, viewports affected, materials)
+  -> G1–G9 release gates (run -> evidence -> PASS / FAIL)
+  -> G14 + motion gates M1–M5
+  -> 11-dimension weighted score -> grade
+  -> below A or any FAIL -> remediation record
+  -> append to coverage-ledger.json
+```
 
-## What it delivers
+Missing materials (spec, screenshots, source paths) reduce the scope of the check and are disclosed; they
+never become a silent pass.
 
-Three things per website change:
-
-1. **Gate verdicts** — G1–G9 + G14 release gates + 4 motion-specific gates, each PASS / FAIL / conditional with evidence. Any FAIL blocks release.
-2. **11-dimension score** — Weighted 100-point model (real-browser verification 18, visual craft 12, CTA closure 12, perf budget 12, …). Grades: S ≥95 / A++ ≥90 / A ≥85 / B ≥70 / C <70.
-3. **Auto-filing** — Below A-grade (or any gate FAIL) automatically files a remediation record with owner and 24h deadline.
-
-## 30-second quick start
+## Quick start
 
 ```bash
-cd demo
-bash run.sh
-# Runs the real gate runner against a test page (~30s)
+git clone https://github.com/HUIIIM/website-qa-gates && cd website-qa-gates
+bash demo/run.sh    # runs the real gate runner on demo/www/; exit 0 = no FAIL, 2 = at least one FAIL
+bash demo/eval.sh   # PASS when the run was recorded in the ledger with zero FAIL
 ```
 
-See `demo/README.md` for details. Machine-runnable gates execute for real; browser-dependent gates are honestly marked `waived` (never faked).
+`demo/run.sh` appends a `demo-*` release to `coverage-ledger.json`. Gate counts change as gates are added;
+see [`demo/README.md`](demo/README.md), including how to inject a defect and watch a gate fail.
 
-## Demo
-
-`bash run.sh` runs the real gate runner (`tools/ledger-run.py`) against a test page — machine gates execute, evidence is written, and the run is appended to `coverage-ledger.json`. Six real dry-run records ship in `evals/` (smoke-01 through smoke-06); a recent production run (`dryrun-2026-10-06-h4`, against the live deploy root) is in the ledger.
-
-> Walkthrough video/screenshot of a gate run producing its verdicts: 待补（占位）——run records above are already real and evidence-backed.
-
-## When to use it
-
-| Scenario | What it produces |
-|---|---|
-| Homepage hero changed | Gate verdicts + score before anything goes live |
-| Mobile (390px) footer restyle | Contrast + touch-target gates, per-item inspection |
-| New animation added | 4 motion-specific gates (no black first frames, no autoplay traps) |
-| A release scored B | Auto-filed remediation with owner + 24h deadline |
-
-## Repo layout
+## Repository layout
 
 ```
-website-qa-gates/
-  SKILL.md              # the skill itself: gates, scoring model, filing rules
-  demo/                 # runnable test page + run.sh → coverage-ledger.json
-  tools/ledger-run.py   # the real gate runner
-  references/           # gate-checklist.md, scorecard-v1.yaml (machine-readable)
-  evals/                # six real dry-run records (smoke-01..06)
-  coverage-ledger.json  # additive ledger of real runs
+SKILL.md              the skill: gates, scoring model, filing rules
+tools/ledger-run.py   gate runner used by the demo and CI
+demo/                 test pages (demo/www/), run.sh, eval.sh
+references/           gate-checklist.md, scorecard-v1.yaml and supporting checklists
+evals/                dry-run records smoke-01 to smoke-06
+coverage-ledger.json  append-only ledger of runs
+dna.css, fonts/       vertciti DNA stylesheet and fonts used by the demo pages
 ```
 
-## Input
+## Status and limitations
 
-One change brief, containing:
+- 21 of the 32 gates in the demo need a real browser, manual review or external material and are marked
+  `waived` there (local run on 2026-10-22). Automating them with a real browser is planned, not done.
+- There is no unit-test suite; the CI check is the demo gate run.
+- Six dry-run records are in `evals/`; a run against the live deploy root (`dryrun-2026-10-06-h4`) is in the
+  ledger.
 
-- **What changed**: e.g. "homepage hero adds a numbers-evidence bar: four numbers + source citations"
-- **Viewports affected**: desktop / mobile (390px) / both
-- **Materials**: change note, spec, screenshots/recordings, source paths (if missing, the check degrades and says so)
+## Security
 
-## Structure
-
-```
-Input: change brief
-  ↓  G1–G9 release gates (each: run → evidence → PASS/FAIL)
-  ↓  G14 + 4 motion-specific gates
-  ↓  11-dimension weighted score → grade
-  ↓  Below A or any FAIL → auto-filed remediation (owner + 24h deadline)
-  ↓  Ledger append (coverage-ledger.json, additive)
-```
-
-## Honesty contract
-
-- Gates that cannot be executed machine-side are marked `waived` with the reason — a waived gate is not a pass.
-- Missing materials degrade the check and are disclosed; they never silently become a pass.
-- Every dry-run record is additive in `coverage-ledger.json` (real runs, e.g. `dryrun-2026-10-06-h4`); the ledger is the scoreboard.
-
-## References
-
-- `references/gate-checklist.md` — Per-gate execution methods and pass criteria.
-- `references/scorecard-v1.yaml` — Machine-readable scoring model.
-- `evals/` — Six real dry-run records (smoke-01 through smoke-06), each with evidence.
-- `tools/ledger-run.py` — Gate runner used in the demos.
-
-## Roadmap
-
-- Real-browser gate automation for the currently `waived` gates (Playwright, evidence-captured).
-- A-grade trend dashboard from the additive ledger.
-- Motion-gate library expansion as the site's animation vocabulary grows.
-
-## FAQ
-
-**What happens if I don't have materials (screenshots, specs)?**
-The check degrades and says so. Missing materials are disclosed as a scope reduction — they never silently become a pass.
-
-**Does a `waived` gate mean the release is blocked?**
-No — waived means "could not be machine-verified, honestly disclosed." It stays visible in the verdict so a human knows what still needs eyes.
-
-**Why auto-file on below-A instead of just warning?**
-Because warnings get scrolled past. A filed record with an owner and a 24h deadline is a closed loop; a warning is a hope.
-
-**Can this run against a staging URL instead of a local page?**
-The gate runner works against a site root or URL; browser-dependent gates need a real browser session. The demo uses a test page so it runs anywhere in ~30s.
+There is no `SECURITY.md` in this repository yet. Report security issues through GitHub private
+vulnerability reporting (Security tab → Report a vulnerability, if enabled); otherwise open an issue without
+sensitive details and ask for a private channel. CI runs gitleaks secret scanning and OpenSSF Scorecard.
 
 ## Contributing
 
-Issues and PRs welcome. Gate changes need a worked dry-run in `evals/` plus a `coverage-ledger.json` entry — paper proposals without a run don't merge.
+Issues and pull requests are welcome. Gate changes need a worked dry-run in `evals/` and a
+`coverage-ledger.json` entry.
 
-## 安全 / Security
+## Licence
 
-本仓库目前没有 `SECURITY.md`。发现安全问题（例如门禁脚本误判、密钥泄露）时，请优先使用 GitHub 的私密漏洞报告（仓库 Security 标签页 → Report a vulnerability，前提是仓库已开启该功能）；未开启时请开一个不含敏感细节的 issue，请求私下联系方式。请不要在公开 issue 中贴出密钥或利用细节。CI 中 `gitleaks` 工作流对每次 push/PR 及每晚做密钥扫描。
+MIT — see [LICENSE](LICENSE). Copyright (c) 2026 Jiahui Miao. `dna.css` is vendored unmodified from
+[HUIIIM/.github](https://github.com/HUIIIM/.github) `design/dist/dna.css`. The Nunito Sans font files in
+`fonts/` are distributed under the SIL Open Font License ([fonts/OFL.txt](fonts/OFL.txt)).
 
-This repo has no `SECURITY.md` yet. Please report security issues through GitHub private vulnerability reporting (Security tab → Report a vulnerability, if enabled for the repo); otherwise open an issue without sensitive details and ask for a private channel. Do not post secrets or exploit details publicly. The `gitleaks` workflow scans for secrets on every push, PR and nightly.
-
-## 许可证 / License
-
-MIT License（见 [LICENSE](LICENSE)，Copyright (c) 2026 Jiahui Miao）。
-
-| 范围 / Module | 许可证 / License | 白话 / Plain meaning |
-|---|---|---|
-| 全部文件 / All files | MIT | 可商用、可修改，需保留版权声明 / Commercial use OK, modify OK, attribution required |
-
-`dna.css` 为从 [HUIIIM/.github](https://github.com/HUIIIM/.github) `design/dist/dna.css` 原样引入的 vertciti DNA 样式表 / vendored unmodified from HUIIIM/.github.
-
-## Author
-
-**Jiahui Miao** — Founder, [vertciti](https://vertciti.com). Building N=1 personal AI infrastructure. Participates in 3GPP working on 6G core network standards.
+Built by vertciti — https://vertciti.com
