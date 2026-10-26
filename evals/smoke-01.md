@@ -13,7 +13,7 @@
 
 - **变更内容**：首页 hero 新增数字证据条——四个数字＋来源标注（送测描述为"309/5/10/7 四个数字"）
 - **影响视口**：桌面＋移动（390px）双视口
-- **材料**：生产源文件 `~/workspace/vertcity/deploy-prod-root/index.html` / `en.html`（中英双版）、`vercel.json`（CSP 配置）
+- **材料**：生产源文件（官网仓生产源）`index.html` / `en.html`（中英双版）、`vercel.json`（CSP 配置）
 
 > 输入差异备注：送测描述写"309/5/10/7 四个数字"，生产现状实际为三个数字条（309 影子验证通过／S4 账单审计进行中／N=1 样板间规划中）。dry-run 按"新增数字证据条"这一变更类型执行，差异本身记入 G6 核对。
 
@@ -24,7 +24,7 @@
 ### 1. G1 data-room 敏感扫描 —— 实际运行脚本
 
 ```
-$ bash ~/workspace/vertcity/security-watch/data-room-gate.sh
+$ bash <security-watch 仓检出路径>/security-watch/data-room-gate.sh
 GATE WARN: 命中邮箱地址（请确认是否为应公开的联系邮箱）：
 .../data-room/dpa-template-v1.txt:73:contact@vertciti.com
 .../data-room/dpa-template-v1.txt:77:contact@vertciti.com
