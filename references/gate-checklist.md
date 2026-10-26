@@ -1,6 +1,6 @@
 # 网站 QA 门禁检查表（G1–G9 ＋ G14 ＋ M1–M5 ＋ A++ 硬扫 ＋ G13）
 
-> 配套 skill：website-qa-gates ｜ 版本 v1.3 ｜ 2026-10-07（新增 M5 "微交互手感"门禁 MV351；
+> 配套 skill：website-qa-gates ｜ 版本 v1.3 ｜ 2026-10-07（新增 M5 "微交互手感"门禁；
 > G14 仍为"AI 初筛＋人工终审"双轮制——深研报告误称 G14 为动效门禁，实际动效门禁为 M1–M4，M5 顺延）
 > 口径来源：本团队网站治理体系（G1–G9）、动效标杆深研（M1–M5）、A++ 审美标准。用自己的话转写。
 
@@ -107,7 +107,7 @@
   3. 键盘/读屏用户不受影响。
 - PASS 标准：三级全部通过。不达标＝动效方案打回。
 
-### M5 · 微交互手感（micro-interaction 手感，MV351，2026-10-07）
+### M5 · 微交互手感（micro-interaction 手感，2026-10-07）
 
 > 编号说明：深研报告称"G14 动效门禁"，实际 G14＝"AI 初筛＋人工终审"双轮制（N6），
 > 动效门禁是 M1–M4。本项按动效门禁家族顺延为 M5，避免编号冲突。
@@ -122,9 +122,9 @@
      提交中 disabled 防重复提交；三态文案＋aria-live；宽度 tween 防顶开旁边元素。
   3. **粒子/次级反馈**：弹起＋粒子＋即时状态反馈三件套（badge 轻顶/文案切换）；
      总时长 100–250ms；粒子在 `prefers-reduced-motion` 下关闭。
-     注：数字滚动（count-up）按 D182 永久禁用，**不**在本项三件套内。
+     注：数字滚动（count-up）永久禁用，**不**在本项三件套内。
 - PASS 标准：① 参数注释/设计说明可查；② 实测证据三选一：弹簧过冲采样值 / 三态录屏 /
-  粒子三件套录屏；③ M4（reduced-motion）同步通过；④ 每个 micro-interaction 过 D182
+  粒子三件套录屏；③ M4（reduced-motion）同步通过；④ 每个 micro-interaction 过数字滚动禁令检查
   "一句话目的判据"（只许四类：层级引导/叙事推进/操作反馈/状态变化）。
 - 失败含义：只有"会变色的方块"式动效（UNIFORM 300ms EASE、无参数、无状态机）＝无手感，打回。
 
@@ -142,7 +142,7 @@
 
 ---
 
-## G13 · 模糊词翻译门禁（MV196，Oil UI 原则 2）
+## G13 · 模糊词翻译门禁（Oil UI 原则 2）
 
 - 做什么：视觉评审意见里的「高级 / 简洁 / 大气 / 有质感 / 更顺眼 / 精致 / 国际范」类模糊词，必须翻译成**字体 / 留白 / 色彩面积 / 字阶 / 对齐 / 动效**等具体决定，否则该条意见打回，不得进入变更单。
 - 方法：每条视觉变更单附"模糊词翻译表"，三列缺一不可：
@@ -196,4 +196,4 @@
   3. **LCP 预算**：动效不得使 LCP 增加 > 300ms（staging 开/关动效各测一次，取差值）。
   4. **禁粒子背景**：全屏粒子 / canvas 背景动效一律 FAIL（源码 `grep particle|<canvas`＝0，且目检无全屏动态背景）。
 - PASS 标准：四项全过。任一 FAIL 即停发。
-- 既有站点基线（2026-10-06 源码级扫描，index.html）：particle 0 / canvas 0 / keyframes 4（`dolly/transform`,`draw/stroke-dashoffset`,`stamp/transform+opacity`,`ignite/height+opacity`）/ `prefers-reduced-motion` 3 处；`draw`/`ignite` 含非白名单属性——按 G12 口径记为既有问题，引用本台账，新变更不得新增非白名单动效。
+- 既有站点基线（2026-10-06 源码级扫描，index.html）：particle 0 / canvas 0 / keyframes 4（`dolly/transform`,`draw/stroke-dashoffset`,`stamp/transform+opacity`,`ignite/height+opacity`）/ `prefers-reduced-motion` 3 处；`draw`/`ignite` 含非白名单属性——按 G12 口径记为既有问题，引用本记录，新变更不得新增非白名单动效。
