@@ -176,9 +176,9 @@ FAIL 项书写规范（A-011 终版格式，必含 7 节：首行 `✖ <RULE-COD
 ## G14 "AI 初筛＋人工终审"双轮制（N6，2026-10-06 并入）
 
 > 机制来源：steal-to-action N6＝深研模式 6（ADA/fAIr）。外部索引为可选增强：
-> `~/workspace/skills/learn-from-masters/references/ai-usage-patterns-index.md`（模式 6）
+> `learn-from-masters` 技能的 `references/ai-usage-patterns-index.md`（模式 6）
 > ——缺失时不影响本门禁执行，以下条款即完整执行口径。
-> 配套条款（可选增强，缺失不影响执行）：`~/workspace/vertcity/deliverables/qa-checklist.md` §14。
+> 配套条款（可选增强，缺失不影响执行）：官网发布走查清单（`deliverables/qa-gates/qa-checklist.md`）§14。
 
 - **轮一 AI 初筛（机器轮）**：变更/走查前先跑全量扫描，按五类输出《可疑项清单》
   （绝密泄露 / 品牌违规 / 对比度 / 错字串页 / 首帧有效），每条带文件＋位置＋疑点＋初筛证据。
