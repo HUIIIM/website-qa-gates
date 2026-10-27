@@ -14,7 +14,7 @@ safety: "G1-G9＋五条动效专项门禁逐项过；低于 A 级自动立案；
 
 网站变更发布前的质量门禁与评分 skill。输入一次变更描述，输出三样东西：逐门禁检查结论、11 维度加权打分与等级、低于 A 级时的自动立案记录。
 
-> D148 洁净室声明：本 skill 全部内容为本团队网站 QA 机制的自有转写，不复制任何外部 skill 原文。
+> 洁净室声明：本 skill 全部内容为本团队网站 QA 机制的自有转写，不复制任何外部 skill 原文。
 
 ## 输入
 
@@ -53,7 +53,7 @@ safety: "G1-G9＋五条动效专项门禁逐项过；低于 A 级自动立案；
 1. 变更不涉及的维度记"不适用"，**直接从分母剔除其权重，不按满分计入**（P1-5，2026-10-10；
   旧口径"N/A 按满分"已废止——"不涉及"不等于"满分"，按满分计是给没验的维度白送分）。
   N/A 必须标注并说明理由；不许拿不相关维度凑分掩盖问题维度；N/A 越多，总分越贴近适用维度的真实水平。
-2. 既有全站问题（如字阶外字号 backlog）与本次变更引入的问题分开记：前者引用既有台账，后者本次扣分。
+2. 既有全站问题（如字阶外字号 backlog）与本次变更引入的问题分开记：前者引用既有问题记录，后者本次扣分。
 3. 每一分的扣减都要有证据指向（源码行、截图、脚本输出），无证据的扣分视为无效。
 
 ### 第三步：自动立案判断
@@ -81,7 +81,7 @@ safety: "G1-G9＋五条动效专项门禁逐项过；低于 A 级自动立案；
 
 ## 第四步：覆盖记账（H4）
 
-每次发布（或 dry-run）跑完三步后，执行记账脚本，把 33 个门禁的逐项结论＋证据写进台账：
+每次发布（或 dry-run）跑完三步后，执行记账脚本，把 33 个门禁的逐项结论＋证据写进运行记录：
 
 ```bash
 python3 tools/ledger-run.py --release <发布ID> --change "<变更描述>" \
@@ -95,10 +95,10 @@ python3 tools/ledger-run.py --release <发布ID> --change "<变更描述>" \
 | `QA_GATES_SITE_ROOT` | 默认站点根目录 | 仓库 `demo/www`（仅演示） |
 | `QA_GATES_SECURITY_GATE` | 外部敏感扫描脚本（G1） | 仓库 `tools/fallback/secret-scan.py` |
 | `QA_GATES_SIZE_GATE` | 外部体积预算脚本（G4） | 仓库 `tools/fallback/size-budget.py` |
-| `QA_GATES_LEDGER` | 台账路径 | 仓库根 `coverage-ledger.json`（`demo/run.sh` 缺省写临时副本） |
+| `QA_GATES_LEDGER` | 运行记录路径 | 仓库根 `coverage-ledger.json`（本地产物，不入仓；`demo/run.sh` 缺省写临时文件） |
 
-- 台账文件：`coverage-ledger.json`（本 skill 根目录，`additive:true` 只追加不覆盖，多轮累积；加锁＋原子替换写入，中断不截断）。
-  台账里的站点路径记为仓库相对路径或 `~/…`，不写本机用户名。
+- 运行记录文件：`coverage-ledger.json`（本 skill 根目录的本地运行产物，不入仓；`additive:true` 只追加不覆盖，多轮累积；
+  加锁＋原子替换写入，中断不截断）。站点路径记为仓库相对路径或 `~/…`，不写本机用户名。
 - 机器可跑的门禁（G1/G4/G7/G8/G15/A1/A2/A5/T1/T2/G12-1/G12-4/V4）真实执行，结论为 pass/fail＋证据引用。
   全部检查不经 shell（外部脚本按 argv 调用，文本扫描为纯 Python），路径含空格或元字符时结论不变、无法注入。
   G1/G4 无环境变量时走仓库内 fallback 真实执行；环境变量指向缺失路径、脚本非零退出或超时一律判 fail（拒绝误判 pass）。
@@ -172,7 +172,7 @@ FAIL 项书写规范（A-011 终版格式，必含 7 节：首行 `✖ <RULE-COD
 - 禁粒子背景：全屏粒子/canvas 背景动效一律 FAIL。
 - 真实发布走完无 bypass 记录后，本门禁视为正式生效。
 
-## G13 模糊词翻译门禁（MV196，Oil UI 原则 2；与「可验证的城市」同构）
+## G13 模糊词翻译门禁（Oil UI 原则 2；与「可验证的城市」同构）
 
 - 视觉评审意见里的「高级 / 简洁 / 大气 / 有质感 / 更顺眼」类模糊词，
   必须翻译成字体 / 留白 / 色彩面积 / 字阶 / 对齐等**具体决定**，否则该条意见打回。
@@ -184,9 +184,9 @@ FAIL 项书写规范（A-011 终版格式，必含 7 节：首行 `✖ <RULE-COD
 ## G14 "AI 初筛＋人工终审"双轮制（N6，2026-10-06 并入）
 
 > 机制来源：steal-to-action N6＝深研模式 6（ADA/fAIr）。外部索引为可选增强：
-> `~/workspace/skills/learn-from-masters/references/ai-usage-patterns-index.md`（模式 6）
+> `learn-from-masters` 技能的 `references/ai-usage-patterns-index.md`（模式 6）
 > ——缺失时不影响本门禁执行，以下条款即完整执行口径。
-> 配套条款（可选增强，缺失不影响执行）：`~/workspace/vertcity/deliverables/qa-checklist.md` §14。
+> 配套条款（可选增强，缺失不影响执行）：官网发布走查清单（`deliverables/qa-gates/qa-checklist.md`）§14。
 
 - **轮一 AI 初筛（机器轮）**：变更/走查前先跑全量扫描，按五类输出《可疑项清单》
   （绝密泄露 / 品牌违规 / 对比度 / 错字串页 / 首帧有效），每条带文件＋位置＋疑点＋初筛证据。
@@ -209,8 +209,8 @@ FAIL 项书写规范（A-011 终版格式，必含 7 节：首行 `✖ <RULE-COD
   ④ P0-2 自家 CI dogfood：`.github/workflows/qa-gates.yml`（push/PR 跑 demo 门禁＋eval，FAIL 即红）。
   另修：`ck_t2` 的 `$'—'` 在 dash 下假阴性 bug（改纯 Python 扫描）。
 
-- v1.3.0（2026-10-07）：MV351——新增 M5 "微交互手感"门禁（弹簧参数/三态/粒子三选一＋实测证据；
-  数字滚动按 D182 禁令排除在选项③之外；参数约束库 frontend-design §4b）。编号勘误：深研报告
+- v1.3.0（2026-10-07）：新增 M5 "微交互手感"门禁（弹簧参数/三态/粒子三选一＋实测证据；
+  数字滚动按既定禁令排除在选项③之外；参数约束库 frontend-design §4b）。编号勘误：深研报告
   误称"G14 动效门禁"，实际 G14＝AI 初筛＋人工终审双轮制（N6），动效门禁为 M1–M4，M5 顺延；
   门禁总数 14→15。实证：vertciti.com 首页 #approveBtn 弹簧化改造（按下 90ms scale .96，
   松开 420ms cubic-bezier(0.34,1.56,0.64,1) 回弹，实测过冲 1.0037）。
@@ -218,5 +218,5 @@ FAIL 项书写规范（A-011 终版格式，必含 7 节：首行 `✖ <RULE-COD
 - v1.2.0（2026-10-06）：N6 并入——新增 G14 "AI 初筛＋人工终审"双轮制门禁（轮一机器标可疑项五类清单，轮二终审人只看标红＋≥10% 抽查，署名留痕；与 qa-checklist.md §14 联动）。
 
 - v1.1.1（2026-10-06）：验货补齐——A-011 采用 g37-work/a011-fail-rewrite.md 为范本（已验货达标）；A-012 独立复核 g39-work/write-time-checks.sh（真实可跑，R3 三处缺陷已记录转 g39 组）；G13 确认已在 SKILL.md，操作细则在 gate-checklist.md；新增 tokens.css（A-009 三层 token 落地）与写时检查 CHECK-4（裸 hex/跨层引用）。
-- v1.1.0（2026-10-06）：A-011 fail 输出升级（结论＋证据＋怎么修三段制）；A-012 写时检查三规则脚本试点（`~/workspace/vertcity/deliverables/write-time-checks-v2-2026-10-06.sh`）；MV196 G13 模糊词翻译门禁的操作细则进 `references/gate-checklist.md`。
+- v1.1.0（2026-10-06）：A-011 fail 输出升级（结论＋证据＋怎么修三段制）；A-012 写时检查三规则脚本试点（`write-time-checks-v2-2026-10-06.sh`）；G13 模糊词翻译门禁的操作细则进 `references/gate-checklist.md`。
 - v1.0.0（2026-10-03）：初始版本（G1–G9＋M1–M4＋A++ 硬扫＋11 维度评分＋自动立案）。

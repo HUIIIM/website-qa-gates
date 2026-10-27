@@ -51,8 +51,8 @@ The version number follows the `version` field in `SKILL.md`. Entries are derive
   - V4：FAIL 门禁须带实际输出证据；V4 自身的 fail 不再立案，不再连锁 / V4 requires output evidence and no longer cascades.
   - 台账加锁＋原子替换写入；站点路径记为仓库相对路径或 `~/…` / ledger writes are locked and atomic; paths no longer record the local user name.
 - demo：`x.png` 坏图与 `href="#"` 死链改为 `demo.svg` 与中英互链；`demo/run.sh` 起本地服务测 G8（不再测 vertciti.com、不依赖外网），
-  台账写临时副本（`QA_GATES_LEDGER`），不再改动仓库文件；超时 25 s → 60 s /
-  demo: fixed the broken image and dead link, G8 now targets a local server, and the demo no longer modifies the tracked ledger.
+  运行记录写临时文件（`QA_GATES_LEDGER`）；超时 25 s → 60 s /
+  demo: fixed the broken image and dead link, G8 now targets a local server, and the demo writes its run to a temporary ledger file.
 - `gitleaks.yml` 增加 `pull-requests: read`（仅 `contents: read` 时 gitleaks-action 在 PR 上返回 403）/
   add `pull-requests: read` so gitleaks-action does not 403 on pull requests.
 

@@ -8,8 +8,8 @@ bash demo/run.sh   # 起本地 http.server 托管 demo/www 并真实跑门禁；
 bash demo/eval.sh  # 输出 PASS/FAIL：断言 release 已记账且零 FAIL
 ```
 
-台账缺省写到仓库 `coverage-ledger.json` 的临时副本（输出里的 `LEDGER=` 行），demo 不会改动仓库文件。
-要记进仓库台账：`QA_GATES_LEDGER="$PWD/coverage-ledger.json" bash demo/run.sh`。
+运行记录缺省写到临时文件（输出里的 `LEDGER=` 行；本地已有 `coverage-ledger.json` 时先复制一份，供 V4 回查）。
+要追加进本地记录：`QA_GATES_LEDGER="$PWD/coverage-ledger.json" bash demo/run.sh`（该文件不入仓）。
 G8 测的是本地起的 demo 服务，不依赖外网。
 
 ## 测试页

@@ -2,15 +2,19 @@
 # website-qa-gates demo: 用 skill 真实门禁 runner 跑 1 个测试页（30 秒内）
 # 退出码透传 runner：0=全部通过，2=有门禁 FAIL（CI 靠此变红）
 # - 起本地 http.server 托管 demo/www，G8 测的是被测页本身，不依赖外网。
-# - 台账缺省写到临时副本（QA_GATES_LEDGER），不改动仓库里的 coverage-ledger.json；
-#   要记进仓库台账：QA_GATES_LEDGER="$PWD/coverage-ledger.json" bash demo/run.sh
+# - 运行记录缺省写到临时文件（QA_GATES_LEDGER）；本地已有 coverage-ledger.json 时先复制过去，
+#   V4 回查才有历史。要追加进本地记录：QA_GATES_LEDGER="$PWD/coverage-ledger.json" bash demo/run.sh
 set -u
 SKILL="$(cd "$(dirname "$0")/.." && pwd)"
 REL="demo-$(date +%Y%m%d-%H%M%S)"
 
 if [ -z "${QA_GATES_LEDGER:-}" ]; then
   QA_GATES_LEDGER="$(mktemp "${TMPDIR:-/tmp}/qa-gates-ledger.XXXXXX")"
-  cp "$SKILL/coverage-ledger.json" "$QA_GATES_LEDGER"  # 带上历史 run，V4 回查才有意义
+  if [ -f "$SKILL/coverage-ledger.json" ]; then
+    cp "$SKILL/coverage-ledger.json" "$QA_GATES_LEDGER"
+  else
+    rm -f "$QA_GATES_LEDGER"  # 空文件不是合法 JSON；runner 会新建
+  fi
 fi
 export QA_GATES_LEDGER
 

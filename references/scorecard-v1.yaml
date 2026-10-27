@@ -1,5 +1,5 @@
 # vertciti Website Scorecard v1.0
-# 机器可读评分卡：以《网站卓越标准 v1.0》(D393) 六维为底座，
+# 机器可读评分卡：以《网站卓越标准 v1.0》六维为底座，
 # 扩展维度（视觉工艺/动效质量/AI可读性/无障碍/转化链路）映射进六维，
 # 不另起一套打架。
 # 消费方式：每日轮次 cron 打分、CI 门禁、自动化立案。
@@ -70,7 +70,7 @@ dimensions:
     script: qa-gates/motif-grep-check.sh
     checks:
       - { id: no_count_up, points: 25, desc: "count-up 数字动画 = 0", pass_if: "源码扫描 countUp/animate-number=0" }
-      - { id: motion_physicalized, points: 40, desc: "保留动效全部物理化且有审计记录(D182)", pass_if: "装饰性动效=0, 审计记录齐" }
+      - { id: motion_physicalized, points: 40, desc: "保留动效全部物理化且有审计记录（含数字滚动禁令）", pass_if: "装饰性动效=0, 审计记录齐" }
       - { id: reduced_motion_respected, points: 35, desc: "prefers-reduced-motion 下禁用/静态替代", pass_if: "媒体查询覆盖全部动效" }
 
   - id: cta_closure
@@ -171,4 +171,4 @@ changelog:
     note: P1-5 N/A 计分修复——总分公式改为权重剔除（Σ适用维度得分×权重/Σ适用维度权重），N/A 不再按满分白送分；v1.0 旧公式废止
   - version: v1.0
     date: 2026-10-02
-    note: 初版（D485 已生效）
+    note: 初版
