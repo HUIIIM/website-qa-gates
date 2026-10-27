@@ -22,6 +22,12 @@ The version number follows the `version` field in `SKILL.md`. Entries are derive
   engineering baseline: CODEOWNERS, `.editorconfig`, gitleaks and OpenSSF Scorecard workflows, Dependabot.
 
 ### 变更 / Changed
+- 新增机器门禁 G15「站内资源完整性」（坏引用、`href="#"`、`javascript:`、不存在的锚点）；demo 基线变为 pass=12 fail=0 waived=21 /
+  new machine gate G15 (local resource integrity); demo baseline is now 12 pass, 0 fail, 21 waived.
+- CI：全部 Actions 按 commit SHA 固定（附版本注释）；`qa-gates.yml` 增加 ruff（`requirements-dev.txt` 版本＋哈希锁定）与
+  `tests/` 单元测试两个阻断步骤，push 只在 `main` 上触发（PR 不再跑两遍）/
+  CI: actions pinned by SHA; ruff (hash-pinned) and unit tests are blocking steps; push runs only on `main`.
+- 新增 `QA_GATES_LEDGER` 环境变量（台账路径）/ new `QA_GATES_LEDGER` environment variable.
 - `demo/www/index.html`、`en.html` 引用 `../../dna.css`；演示链接改为黑底 `dna-btn`，`body` 加 16px 边距 /
   demo pages link the DNA stylesheet; the demo link is a black `dna-btn`; 16px body gutter.
   `dna.css` 放在 `demo/www` 之外，避免门禁 runner 把它当作被测站点 CSS 扫描 /
@@ -30,6 +36,23 @@ The version number follows the `version` field in `SKILL.md`. Entries are derive
   least-privilege permissions, job timeout, actions bumped to `@v7`.
 
 ### 修复 / Fixed
+- 门禁 runner 假 PASS（2026-10-25 独立评估 P1-1 至 P1-5，P2-1 至 P2-9）/ gate-runner false passes found by the 2026-10-25 independent assessment:
+  - G1/G4 外部或 fallback 脚本非零退出、超时一律判 fail，不再只看输出里有没有 `FAIL` /
+    G1/G4 fail on a non-zero exit or timeout, not only on `FAIL` in the output.
+  - `tools/ledger-run.py` 不再经 shell：外部脚本按 argv 调用，grep 类检查改为纯 Python；路径含空格不再假 PASS，
+    `--site-url` / `--site-root` 无法注入命令，`--site-url` 只接受 http/https /
+    no shell anywhere in the runner: paths with spaces no longer pass falsely and arguments cannot inject commands.
+  - G12-1 逐属性判定（`transition: transform, width` 判 fail；省略属性名＝all；检查 `@keyframes`；去掉只看前 40 条的截断）/
+    G12-1 checks each transitioned property and `@keyframes` declarations, with no 40-line cap.
+  - fallback 敏感扫描扫全部非二进制文件（含 `.env`、`.mjs`、`.map`、`.svg`），新增 `github_pat_`、`sk-ant-`、`AIza`、JWT、凭据赋值规则；
+    英文密级只认大写标识（`secret sauce` 不再误报）；接上 `.publish-allowlist`（`--allowlist`）/
+    the fallback secret scan covers every text file, more token shapes, no lowercase "secret" false positive, and honours `.publish-allowlist`.
+  - 站点根目录不存在时 exit 2 且不记账 / a missing site root exits 2 without writing the ledger.
+  - V4：FAIL 门禁须带实际输出证据；V4 自身的 fail 不再立案，不再连锁 / V4 requires output evidence and no longer cascades.
+  - 台账加锁＋原子替换写入；站点路径记为仓库相对路径或 `~/…` / ledger writes are locked and atomic; paths no longer record the local user name.
+- demo：`x.png` 坏图与 `href="#"` 死链改为 `demo.svg` 与中英互链；`demo/run.sh` 起本地服务测 G8（不再测 vertciti.com、不依赖外网），
+  运行记录写临时文件（`QA_GATES_LEDGER`）；超时 25 s → 60 s /
+  demo: fixed the broken image and dead link, G8 now targets a local server, and the demo writes its run to a temporary ledger file.
 - `gitleaks.yml` 增加 `pull-requests: read`（仅 `contents: read` 时 gitleaks-action 在 PR 上返回 403）/
   add `pull-requests: read` so gitleaks-action does not 403 on pull requests.
 

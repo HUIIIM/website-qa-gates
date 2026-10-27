@@ -1,20 +1,22 @@
 #!/bin/bash
 # website-qa-gates eval: 一键 PASS/FAIL，零外部依赖
-# 断言两件事：(1) release 已记账进 coverage-ledger.json；(2) 无门禁 FAIL。
+# 断言两件事：(1) release 已记账进 run.sh 报出的台账（缺省为临时副本）；(2) 无门禁 FAIL。
 set -u
 DEMO="$(cd "$(dirname "$0")" && pwd)"
 OUT="$(bash "$DEMO/run.sh" 2>&1)"
 echo "$OUT" | tail -8
 REL="$(echo "$OUT" | grep -o 'RELEASE=demo-[0-9-]*' | cut -d= -f2)"
+LEDGER="$(echo "$OUT" | grep -o 'LEDGER=.*' | cut -d= -f2-)"
 [ -n "$REL" ] || { echo "FAIL: 未产出 release id"; exit 1; }
-python3 - "$DEMO/../coverage-ledger.json" "$REL" <<'EOF'
+[ -n "$LEDGER" ] || { echo "FAIL: 未产出台账路径"; exit 1; }
+python3 - "$LEDGER" "$REL" <<'EOF'
 import json, sys
 ledger_path, rel = sys.argv[1], sys.argv[2]
 d = json.load(open(ledger_path))
 runs = d.get("runs", []) if isinstance(d, dict) else []
 run = next((e for e in runs if e.get("run_id") == rel), None)
 if run is None:
-    print(f"FAIL: coverage-ledger.json 无该 release 记账")
+    print(f"FAIL: 台账 {ledger_path} 无该 release 记账")
     sys.exit(1)
 n_fail = run["summary"]["fail"]
 if n_fail:

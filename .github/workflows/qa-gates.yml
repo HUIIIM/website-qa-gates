@@ -1,10 +1,11 @@
 # website-qa-gates 自家 CI dogfood（P0-2，2026-10-10）
-# 每次 push/PR 跑 demo 门禁＋eval 断言：门禁 FAIL 即红。
+# 每次 PR 与 main push 跑 lint＋单元测试＋demo 门禁＋eval 断言：任一失败即红。
 # 一个"发布门禁"项目没有自己的门禁是公信力硬伤——push 即跑，红了就修。
 name: qa-gates-dogfood
 
 on:
   push:
+    branches: [main]
   pull_request:
 
 permissions:
@@ -14,10 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
           python-version: "3.12"
+      - name: lint（ruff，阻断式）
+        run: |
+          python -m pip install --require-hashes --no-deps -r requirements-dev.txt
+          ruff check tools tests
+      - name: 单元测试（门禁 runner 回归）
+        run: python -m unittest discover -s tests -v
       - name: 运行门禁（demo 真实跑通）
         run: bash demo/run.sh
       - name: eval 断言（记账＋零 FAIL）

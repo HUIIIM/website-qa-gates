@@ -34,11 +34,11 @@ A website maintainer runs it before releasing a site change and gets per-gate ve
 | 记录 | `coverage-ledger.json` 只追加 | 无统一记录 |
 
 ## 证据 / Evidence
-- 测试：仓库没有单元测试套件。CI 工作流 `.github/workflows/qa-gates.yml` 在每次 push/PR 上跑 `demo/run.sh` 与 `demo/eval.sh`。2026-10-22 本地运行结果：`pass=11 fail=0 waived=21 machine=11/32`，`eval.sh` 输出 PASS。
+- 测试：`tests/test_gates.py`（标准库 unittest）覆盖机器门禁的已知假 PASS 场景。CI 工作流 `.github/workflows/qa-gates.yml` 在每个 PR 与 main push 上跑 ruff、单元测试、`demo/run.sh` 与 `demo/eval.sh`。2026-10-26 本地运行结果：`pass=12 fail=0 waived=21 machine=12/33`，`eval.sh` 输出 PASS。
 - 真实运行：`evals/smoke-01.md` – `smoke-06.md` 六份 dry-run 记录；`coverage-ledger.json` 中有 13 条 run 记录（含 `dryrun-2026-10-06-h4`、`v2-20261008-qa`）。
 - 红测：commit 8a4edbc 故意注入 em-dash 缺陷使 CI 变红，428252e 修复。
-- 不能证明的：32 个门禁中 21 个在 demo 中为 `waived`（需要真实浏览器、人工核对或外部材料）；部分 eval 与 ledger 记录引用的是仓库外绝对路径（如家目录下的工作区路径），在本仓库内无法复核。
-- Evidence: no unit-test suite; CI runs the demo gates and eval. Local run on 2026-10-22: pass=11 fail=0 waived=21. 21 of 32 gates are waived in the demo; some records cite paths outside this repo.
+- 不能证明的：33 个门禁中 21 个在 demo 中为 `waived`（需要真实浏览器、人工核对或外部材料）；部分 eval 与 ledger 记录引用的是仓库外路径（如家目录下的工作区路径），在本仓库内无法复核。
+- Evidence: unit tests in `tests/`; CI runs ruff, the unit tests, the demo gates and eval. Local run on 2026-10-26: pass=12 fail=0 waived=21. 21 of 33 gates are waived in the demo; some records cite paths outside this repo.
 
 ## 边界与风险 / Boundaries and risks
 - 不做：替代人工终审（G14 规定 AI 初筛＋人工终审）；在 demo 中自动驱动浏览器。

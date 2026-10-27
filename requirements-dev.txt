@@ -1,0 +1,4 @@
+# CI lint 依赖：版本＋哈希锁定（SOTA SEC-A5），pip install --require-hashes 安装。
+# 哈希为 ubuntu-latest（manylinux x86_64）wheel；升级时同时更新版本与哈希。
+ruff==0.17.0 \
+    --hash=sha256:bc73e7c133e82d55b5f15897b2a442d72c0cb4a0c886c46801ce3c247150b60c
