@@ -81,7 +81,7 @@ safety: "G1-G9＋五条动效专项门禁逐项过；低于 A 级自动立案；
 
 ## 第四步：覆盖记账（H4）
 
-每次发布（或 dry-run）跑完三步后，执行记账脚本，把 32 个门禁的逐项结论＋证据写进台账：
+每次发布（或 dry-run）跑完三步后，执行记账脚本，把 33 个门禁的逐项结论＋证据写进台账：
 
 ```bash
 python3 tools/ledger-run.py --release <发布ID> --change "<变更描述>" \
@@ -95,14 +95,22 @@ python3 tools/ledger-run.py --release <发布ID> --change "<变更描述>" \
 | `QA_GATES_SITE_ROOT` | 默认站点根目录 | 仓库 `demo/www`（仅演示） |
 | `QA_GATES_SECURITY_GATE` | 外部敏感扫描脚本（G1） | 仓库 `tools/fallback/secret-scan.py` |
 | `QA_GATES_SIZE_GATE` | 外部体积预算脚本（G4） | 仓库 `tools/fallback/size-budget.py` |
+| `QA_GATES_LEDGER` | 台账路径 | 仓库根 `coverage-ledger.json`（`demo/run.sh` 缺省写临时副本） |
 
-- 台账文件：`coverage-ledger.json`（本 skill 根目录，`additive:true` 只追加不覆盖，多轮累积）。
-- 机器可跑的门禁（G1/G4/G7/G8/A1/A2/A5/T1/T2/G12-1/G12-4/V4）真实执行，结论为 pass/fail＋证据引用。
-  G1/G4 无环境变量时走仓库内 fallback 真实执行；环境变量指向缺失路径时直接判 fail（拒绝误判 pass）。
+- 台账文件：`coverage-ledger.json`（本 skill 根目录，`additive:true` 只追加不覆盖，多轮累积；加锁＋原子替换写入，中断不截断）。
+  台账里的站点路径记为仓库相对路径或 `~/…`，不写本机用户名。
+- 机器可跑的门禁（G1/G4/G7/G8/G15/A1/A2/A5/T1/T2/G12-1/G12-4/V4）真实执行，结论为 pass/fail＋证据引用。
+  全部检查不经 shell（外部脚本按 argv 调用，文本扫描为纯 Python），路径含空格或元字符时结论不变、无法注入。
+  G1/G4 无环境变量时走仓库内 fallback 真实执行；环境变量指向缺失路径、脚本非零退出或超时一律判 fail（拒绝误判 pass）。
+  站点根目录不存在时直接 exit 2、不记账。`--site-url` 只接受 http/https。
+- G12-1 逐个属性判定：`transition` 每一项（省略属性名＝all）与 `@keyframes` 内每条声明都必须是 transform/opacity。
+- G15 站内资源完整性：`src`/`href` 指向的站内文件必须存在；`href="#"`、空 href、`javascript:` 判死链；`#锚点` 必须在同页存在。
 - 需真浏览器/人工的门禁按诚实原则记 `waived`（未验证），不许用推测代替。
 - **V4 真校验（P0-3，2026-10-10）**：本轮真实 FAIL 全部记入 run 的 `interceptions`
  （拦截项/处置）；V4 的 evidence 必须逐条引用到该 FAIL 的拦截项记录，引用不到则 V4 自判 fail；
   本轮零 FAIL 则记"零拦截"并回查上一条 run 的处置闭环，未闭环则 V4 自判 fail。
+  （2026-10-26 修订：FAIL 门禁必须带实际输出证据，只有命令描述不算；V4 自身的 fail 不再立案，
+  处置原 run 的拦截项即可解除，不会一路连锁。）
   处置闭环用 `tools/ledger-dispose.py --run-id … --gate-id … --action 立案/整改/复验 --result open/closed` 追加。
 - 任一门禁 fail → 脚本 exit 2，按第三步立案规则处理；waived 项在下次真实发布时补跑。
 - 单条目 schema 见 `references/coverage-ledger.schema.json`（已收进仓库，P0-1）。

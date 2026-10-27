@@ -13,11 +13,11 @@
 
 V4 回查规则：上一条含拦截的 run 里 status != closed 的拦截项存在 -> V4 自判 fail。
 """
-import argparse, json, os, sys
+import argparse, os, sys
 from datetime import datetime, timezone
 
-SKILL_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LEDGER_PATH = os.path.join(SKILL_DIR, "coverage-ledger.json")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from ledger_io import ledger_path, locked_ledger  # noqa: E402
 
 def main():
     ap = argparse.ArgumentParser()
@@ -28,25 +28,20 @@ def main():
     ap.add_argument("--note", default="")
     a = ap.parse_args()
 
-    with open(LEDGER_PATH) as f:
-        ledger = json.load(f)
-    assert ledger.get("additive") is True, "ledger additive 标志被篡改，拒绝写入"
-
-    for run in ledger.get("runs", []):
-        if run.get("run_id") != a.run_id:
-            continue
-        for it in run.get("interceptions", []):
-            if it.get("gate_id") != a.gate_id:
+    with locked_ledger(ledger_path(), create=False) as (ledger, save):
+        for run in ledger.get("runs", []):
+            if run.get("run_id") != a.run_id:
                 continue
-            it.setdefault("disposition_history", []).append(
-                {"at": datetime.now(timezone.utc).isoformat(),
-                 "action": a.action, "result": a.result, "note": a.note})
-            it["status"] = a.result
-            with open(LEDGER_PATH, "w") as f:
-                json.dump(ledger, f, ensure_ascii=False, indent=2)
-                f.write("\n")
-            print(f"OK: run={a.run_id} gate={a.gate_id} action={a.action} result={a.result}")
-            return 0
+            for it in run.get("interceptions", []):
+                if it.get("gate_id") != a.gate_id:
+                    continue
+                it.setdefault("disposition_history", []).append(
+                    {"at": datetime.now(timezone.utc).isoformat(),
+                     "action": a.action, "result": a.result, "note": a.note})
+                it["status"] = a.result
+                save(ledger)
+                print(f"OK: run={a.run_id} gate={a.gate_id} action={a.action} result={a.result}")
+                return 0
     print(f"NOT FOUND: run={a.run_id} gate={a.gate_id} 的拦截项", file=sys.stderr)
     return 1
 
