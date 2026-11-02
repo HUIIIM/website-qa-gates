@@ -29,6 +29,9 @@ Fixes from the 2026-10-28 SOTA scorecard (issue #12); items marked "本轮 / thi
 - `tools/trace-matrix.py` 与 `docs/TRACEABILITY.md`：每个机器门禁都有 pass 与 fail 用例 / gate-to-test traceability.
 - `--lang en`、`QA_GATES_LANG`：英文输出；台账门禁带 `name_en` / English output.
 - `SECURITY.md`、`THIRD_PARTY_NOTICES.md`、`evals/injection-01.md`、`evals/smoke-08.md`、`mypy.ini`。
+- 双语对齐（`CLAUDE.md` 发布门禁）：`SKILL.md` 改为英文版，原中文版移到 `SKILL.zh.md`；新增 `README.zh.md`。两对文件章节一一对应 /
+  bilingual parity: English `SKILL.md`, Chinese `SKILL.zh.md`, new `README.zh.md`, sections aligned.
+- 检查表新增「门禁验证状态」：未在真实缺陷上触发过的门禁标为假设 / gate evidence status, unproven gates labelled hypotheses.
 - CI：mypy（哈希锁定）、追溯矩阵检查、浏览器门禁（`QA_GATES_REQUIRE_BROWSER=1`）、证据存档、dna-drift /
   CI adds mypy, traceability, browser gates, an evidence artifact and the dna-drift job.
 

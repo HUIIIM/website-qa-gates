@@ -4,13 +4,15 @@ A vertciti skill for pre-release QA of website changes: it returns per-gate pass
 evidence, an 11-dimension weighted score with a grade, and a remediation record when a release falls below
 grade A, for teams that ship changes to a marketing or product site.
 
+中文版：[README.zh.md](README.zh.md)
+
 | | |
 |---|---|
 | Status | active · early, single maintainer — v1.5.0 (version from [SKILL.md](SKILL.md)); CI runs ruff, mypy, the traceability check, the unit tests (including real-browser gates) and the demo gates on every pull request and push to `main`; local run on 2026-11-02: 20 pass, 0 fail, 14 of 34 gates `waived` (they need manual review or external materials) |
-| Type | vertciti skill (agent skill defined in [SKILL.md](SKILL.md)) with a Python gate runner ([`tools/ledger-run.py`](tools/ledger-run.py)) and real-browser gates ([`tools/browser/gates.cjs`](tools/browser/gates.cjs), Playwright + axe-core) |
+| Type | vertciti skill (agent skill defined in [SKILL.md](SKILL.md) / [SKILL.zh.md](SKILL.zh.md)) with a Python gate runner ([`tools/ledger-run.py`](tools/ledger-run.py)) and real-browser gates ([`tools/browser/gates.cjs`](tools/browser/gates.cjs), Playwright + axe-core) |
 | Install / use | Load `SKILL.md` as a skill in your agent; run the gates locally with `bash demo/run.sh` |
 | Licence | MIT ([LICENSE](LICENSE)) for this repository's own code and docs, Copyright (c) 2026 Jiahui Miao · `demo/www/dna.css` is proprietary to VERTCITY LLC and the fonts are SIL OFL — see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) |
-| Languages | README in English · skill text, checklists and demo pages in 简体中文 · runner output in either (`--lang zh\|en`) |
+| Languages | README and SKILL in English and 简体中文 · checklists and demo pages in 简体中文 · runner output in either (`--lang zh\|en`) |
 | Contact | Security: [SECURITY.md](SECURITY.md) · Product: [vertciti.com](https://vertciti.com) |
 
 ## Overview
@@ -70,7 +72,7 @@ change the thresholds and site-specific rules, and point `QA_GATES_CONFIG` at yo
 ## Repository layout
 
 ```
-SKILL.md                 the skill: gates, scoring model, filing rules
+SKILL.md / SKILL.zh.md   the skill (English / Chinese): gates, scoring model, filing rules
 qa-gates.config.json     vertciti gate settings (thresholds, site URL, extra secret rules, excluded files)
 tools/ledger-run.py      gate runner (no shell; fails closed; ledger writes locked, atomic and sealed)
 tools/browser/           real-browser gates (Playwright + axe-core, exact versions in package-lock.json)
@@ -90,6 +92,8 @@ evals/                   dry-run records smoke-01 to smoke-08, injection-01
   G12-2, G12-3, plus M1, for which the runner takes the screenshots but a person judges them.
 - Machine verdicts cover only the criteria written in [`references/gate-checklist.md`](references/gate-checklist.md).
   For example G16 runs axe-core, which finds only part of WCAG; G5 compares numbers and structure, not meaning.
+- Most gates have fired only on defects injected by tests, so they are labelled hypotheses; see "Gate evidence
+  status" in the checklist.
 - Performance is measured as bytes (G4), not as LCP, CLS or INP on a real device.
 - The vendored `dna.css` breaks this repository's own A1, A2 and G12-1 rules. It is excluded from those gates by
   `qa-gates.config.json`, and every run says so in its evidence. The fix belongs upstream in HUIIIM/.github.
