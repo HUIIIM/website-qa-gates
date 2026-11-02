@@ -67,7 +67,7 @@ dimensions:
     name_zh: 动效质量
     weight: 7
     scorer: script
-    script: qa-gates/motif-grep-check.sh
+    script: tools/ledger-run.py   # 机器门禁 A5（count-up）、G12-1（动效白名单）；M4（reduced-motion）由 tools/browser/gates.cjs 执行
     checks:
       - { id: no_count_up, points: 25, desc: "count-up 数字动画 = 0", pass_if: "源码扫描 countUp/animate-number=0" }
       - { id: motion_physicalized, points: 40, desc: "保留动效全部物理化且有审计记录（含数字滚动禁令）", pass_if: "装饰性动效=0, 审计记录齐" }
@@ -99,7 +99,7 @@ dimensions:
     name_zh: 性能预算
     weight: 12
     scorer: script
-    script: qa-gates/size-gate.sh
+    script: tools/fallback/size-budget.py   # 机器门禁 G4（单文件＋单页合计）；LCP/CLS/INP 需真机 Lighthouse，本仓库未实现
     checks:
       - { id: lcp_le_2_5s, points: 30, desc: "LCP <= 2.5s", pass_if: "真机 Lighthouse" }
       - { id: cls_le_0_1, points: 25, desc: "CLS <= 0.1", pass_if: "真机 Lighthouse" }
@@ -153,8 +153,7 @@ dimensions:
     base_dimension: 维六
     name_zh: 内容口径零残留+N=1
     weight: 3
-    scorer: script
-    script: tools/banned-terms-gate.sh
+    scorer: human      # 旧词黑名单脚本不在本仓库（2026-11-02 核实），按人工口径执行
     checks:
       - { id: legacy_terms_zero_hit, points: 40, desc: "旧词黑名单零命中(procurement/concierge/marketplace/agent commerce/代采购/AI Data Go/用户可见处 anomalies-autogpt 旧名)", pass_if: "零命中; data-room 历史档案凭页眉豁免" }
       - { id: lowercase_vertciti_lock, points: 20, desc: "vertciti 全小写锁定", pass_if: "Vertcity/VERTCITY=0" }

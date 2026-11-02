@@ -1,10 +1,14 @@
-# 网站 QA 门禁检查表（G1–G9 ＋ G14 ＋ G15 ＋ M1–M5 ＋ A++ 硬扫 ＋ G13）
+# 网站 QA 门禁检查表（G1–G9 ＋ G14 ＋ G15 ＋ G16 ＋ M1–M5 ＋ A++ 硬扫 ＋ G13）
 
 > 配套 skill：website-qa-gates ｜ 版本 v1.3 ｜ 2026-10-07（新增 M5 "微交互手感"门禁；
 > G14 仍为"AI 初筛＋人工终审"双轮制——深研报告误称 G14 为动效门禁，实际动效门禁为 M1–M4，M5 顺延）
 > 口径来源：本团队网站治理体系（G1–G9）、动效标杆深研（M1–M5）、A++ 审美标准。用自己的话转写。
 
-**总规则**：每批发布必跑全部十六项门禁（2026-10-26 新增 G15）＋五项硬扫，任一 FAIL 停发，返工复验。质检组抽查留痕。
+**总规则**：每批发布必跑全部十七项门禁（2026-10-26 新增 G15，2026-11-02 新增 G16）＋五项硬扫，任一 FAIL 停发，返工复验。质检组抽查留痕。
+
+**机器执行**（2026-11-02 起）：标"机器门禁"的项由 `tools/ledger-run.py` 真实执行；标"真浏览器门禁"的项由
+`tools/browser/gates.cjs`（Playwright Chromium＋axe-core）在本地服务上逐页执行，截图与 axe JSON 存入证据目录。
+阈值来自门禁配置（`qa-gates.config.json` 或 `QA_GATES_CONFIG`）。机器 PASS 只覆盖下文写明的判据，判据之外的人工项仍按原口径执行。
 
 ---
 
@@ -13,32 +17,32 @@
 ### G1 · data-room 敏感信息扫描
 
 - 做什么：扫描发布包里的资料室文件，查"绝密"字样、未来日期章、私钥、token、密钥等不应公开的内容。
-- 命令（P0-1 可移植化）：`QA_GATES_SECURITY_GATE` 环境变量指向外部扫描脚本；未设置时 runner 自动用仓库内 `tools/fallback/secret-scan.py`（纯 stdlib 最小规则集：绝密字样/私钥块/高置信 token 前缀）。
+- 命令（机器门禁）：`QA_GATES_SECURITY_GATE` 指向外部扫描脚本（以 `bash <脚本> <站点根目录>` 调用）；未设置时用仓库内 `tools/fallback/secret-scan.py`（纯 stdlib：密级字样/私钥块/高置信 token/凭据赋值，另加配置 `secret_scan.extra_patterns` 里的站点专属规则）。
 - PASS 标准：零 FAIL 项。命中公开联系邮箱等为 WARN——可发布，但须人工复核确认是应公开项。
 
 ### G2 · 触控目标 ≥44×44
 
 - 做什么：390px 视口下量取所有可见可交互元素（链接/按钮/输入框等）的触控尺寸。
-- 命令：真浏览器实测（Playwright/人工）；仓库内无自带实现时记 waived（P1-2 规划中）。
+- 命令（真浏览器门禁）：390×844 视口下逐页量取 `a[href]`、`button`、表单控件、`[role=button]`、`[tabindex]` 等可见可交互元素；阈值为配置 `browser.min_target_px`（缺省 44）。句中内联链接自动豁免，并在证据里列出。
 - PASS 标准：exit 0 且输出 `RESULT: [PASS]`；全部可见可交互元素 ≥44×44。纯文本内联链接豁免，单独列备查。
 - 基线：2026-09-28 实测 748 个元素全 PASS。新路由/新组件上线后必须加测，不许沿用旧基线。
 
 ### G3 · 390px 零横向截断
 
 - 做什么：22 个路由 × 中英双语 @390px，检查有无元素被横向裁剪。注意 `overflow-x:hidden` 会静默裁剪，常规检测失明，必须用专用脚本。
-- 命令：真浏览器渲染实测；仓库内无自带实现时记 waived（P1-2 规划中）。
+- 命令（真浏览器门禁）：390px 下逐页检查 `scrollWidth ≤ 视口宽`，并逐个可见元素检查是否越出视口——`overflow-x:hidden` 静默裁剪的元素同样判 FAIL；位于 `overflow-x:auto/scroll` 容器内的元素与视觉隐藏元素（≤1px、整体移到左侧屏外的跳转链接）除外。
 - PASS 标准：`OVERFLOW GATE: PASS`。
 
 ### G4 · 体积预算
 
 - 做什么：卡首屏体积与核心性能指标，防止变更把页面养胖。
-- 命令（P0-1 可移植化）：`QA_GATES_SIZE_GATE` 环境变量指向外部体积脚本；未设置时 runner 自动用仓库内 `tools/fallback/size-budget.py`（纯 stdlib：单文件 1.2MB 红线 FAIL / 1.0MB 黄线 WARN）。
+- 命令（机器门禁）：`QA_GATES_SIZE_GATE` 指向外部体积脚本（以 `bash <脚本> <站点根目录>` 调用）；未设置时用 `tools/fallback/size-budget.py`：任一文件超过单文件红线（缺省 1.2MB）FAIL、黄线（1.0MB）WARN；每个 HTML 页面自身＋其站内引用资源（含所引 CSS 的 `url()`）合计超过单页红线（缺省 1.5MB）FAIL；配置 `size_budget.required_pages` 缺失 FAIL。单页合计是"全部加载"的上界，不替代真机 LCP（见 G12-3）。
 - PASS 标准：移动端首屏 ≤1.5MB；LCP ≤2.5s、CLS ≤0.1、INP ≤200ms（真机 Lighthouse）。
 
 ### G5 · 中英镜像一致性
 
 - 做什么：变更内容在中英双版同时落地，结构、数据、来源标注一一对应，不许单语悬空。
-- 方法：中英双版逐项比对（数字/文案/链接/标注）。
+- 方法：机器门禁做机械项——按 `hreflang="en"` 或 `index.html↔en.html`、`x.html↔en/x.html`、`x.zh.html↔x.en.html` 配对，比对数字序列、各级标题数、链接数、图片数，并检查英文版无全角标点；找不到成对页面记 waived。译文语义一致仍由人工逐项比对。
 - PASS 标准：双版断言一一对应；英文版无全角标点；双语块排布符合规范（当前语言在上字大，另一语言在下字小）。
 
 ### G6 · 题材说明书机械项
@@ -50,26 +54,29 @@
 ### G7 · CSP 内联脚本 hash round-trip
 
 - 做什么：页面内联脚本改了必须同步重算 `script-src` hash，否则浏览器拦截致白屏。round-trip＝重算当前内联脚本 hash，与部署配置里的 hash 逐个比对。
-- 方法：提取内联 `<script>` 内容 → sha256 → base64 → 与 `vercel.json` 内 hash 比对。
+- 方法（机器门禁）：提取 JS 类型的内联 `<script>`（无 type、JS MIME、module、importmap、speculationrules；JSON-LD 等数据块不算）→ sha256 → base64 → 与部署配置（配置 `csp_sources`，缺省 `vercel.json`、`_headers`）里 CSP `script-src-elem`/`script-src`/`default-src` 的 hash 比对。没有 hash 时，有内联脚本却无 nonce/`unsafe-inline` 判 FAIL；没有任何 CSP 配置记 waived。
 - PASS 标准：全部 hash 一一对应，无多无少。
 
 ### G8 · 生产可达性
 
 - 做什么：READY ≠ 可访问。部署后必须真实请求生产 URL。
-- 命令：`curl -s -o /dev/null -w "%{http_code}" https://vertciti.com/`（及本次变更涉及的路由）
+- 命令（机器门禁）：GET `--site-url`（或 `QA_GATES_SITE_URL`、配置 `site_url`）首页，不跟随重定向；没给地址记 waived。本次变更涉及的其他路由仍需逐个请求。
 - PASS 标准：HTTP 200。runner 用 Python 直接 GET（不跟随重定向，不经 shell），`--site-url` 只接受 http/https。
 
 ### G15 · 站内资源完整性（2026-10-26 新增，机器门禁）
 
 - 做什么：站内引用的图片、样式、脚本、页面必须真实存在；不允许占位死链。
-- 方法：`tools/ledger-run.py` 的 `ck_g15` 扫描全部 `*.html` 的 `src`/`href`：站内路径解析后文件须存在（目录则找 `index.html`）；
+- 方法：`tools/ledger-run.py` 的 `ck_g15` 扫描全部 `*.html` 的 `src`/`href`/`srcset`/`poster`（带不带引号都算）、`<style>` 与 `style=""` 里的 `url()`、
+  以及站内 `.css` 文件里的 `url()`：站内路径解析后文件须存在（目录则找 `index.html`），且不得越出站点根目录（部署后会 404）；
   `href="#"`、空 href、`javascript:` 判死链；`#锚点` 须在同页有对应 `id`/`name`。外链（http/https/mailto/tel/data）不在此门禁范围。
 - PASS 标准：坏引用 0 条。
 
 ### G9 · 真机渲染复验
 
 - 做什么：真浏览器（生产 CSP 下）渲染桌面 1440px＋移动 390px，确认页面非空、无内联脚本拦截报错、无横滚、布局完整。
-- 方法：真浏览器人工目检＋截图留痕。headless Chromium（`/opt/meta-chromium/chrome`）可用于预检，但最终以真浏览器为准。
+- 方法（真浏览器门禁）：本地服务按部署配置下发同一份 CSP，Chromium 在 1440×900 与 390×844 渲染每页：
+  控制台零错误零警告、零页面异常、零 CSP 拦截、站内资源零 4xx/5xx/加载失败、页面有可见文字；关动效截图存入证据目录。
+  页脚等视觉项仍需看截图人工目检。
 - PASS 标准：`#app` 非空；控制台零错误零警告；390px 页脚逐项检查通过（文字对比度、按钮可读性、法律链接胶囊可点）。
 
 ### G14 · AI 初筛＋人工终审双轮制（N6，2026-10-06 并入）
@@ -84,6 +91,12 @@
   审计报告含"初筛命中数 / 终审确认数 / 误报数"三行。
 - 铁律：初筛永不代替终审；无署名＝未终审；H4 记账中 G14 的终审项按诚实原则记（未终审＝waived，不许用初筛 PASS 代替）。
 
+### G16 · axe WCAG 自动扫描（2026-11-02 新增，真浏览器门禁）
+
+- 做什么：用 axe-core 对每页按 WCAG 2.0/2.1/2.2 A＋AA 规则（配置 `browser.axe_tags`）自动扫描，浅色与深色配色各一次。
+- PASS 标准：违规 0 条。每页每种配色的 axe 结果 JSON 存入证据目录。
+- 边界：自动扫描只能发现一部分 WCAG 问题（axe 自己也这样说明），不替代 A4 键盘走查与人工读屏检查。
+
 ---
 
 ## M1–M4 动效专项门禁
@@ -91,6 +104,7 @@
 ### M1 · 关动效静态帧完整性（static_frame_integrity）
 
 - 做什么：真浏览器注入 `*{animation:none!important;transition:none!important}` 后截首屏（1440＋390），人工目检。
+- 机器辅助：真浏览器门禁以 `animations: disabled` 为每页截取 1440 与 390 两张静态帧存入证据目录；构图是否成立由人工看截图判定，机器结论保持 waived。
 - PASS 标准：关掉动效后首屏依然是"一张成立的设计"——标题层级清晰、CTA 可见、无元素重叠错位。
 - 失败含义：动效在遮丑——打回动效方案，先修静态构图。
 
@@ -112,6 +126,9 @@
   1. 所有动效有静态替代——替代不是 `display:none` 藏内容；
   2. 替代后信息完整——M1 的静态帧检查在 reduce 模式下重跑一遍；
   3. 键盘/读屏用户不受影响。
+- 方法（真浏览器门禁）：`prefers-reduced-motion: reduce` 下逐页检查全部元素的 transition/animation 时长 ≤ 配置
+  `browser.reduced_motion_max_ms`（缺省 110ms）、`document.getAnimations()` 无无限循环或超时长动画（第 1 级）；
+  页面文字与可见元素数和正常模式一致（第 2 级）；第 3 级键盘部分见 A4，读屏仍需人工。
 - PASS 标准：三级全部通过。不达标＝动效方案打回。
 
 ### M5 · 微交互手感（micro-interaction 手感，2026-10-07）
@@ -144,7 +161,7 @@
 1. **字阶命中**：字号全部命中字阶表（Display 40 / H1 32 / H2 24 / H3 20 / Body 16 / Small 14 / Caption 12），禁 13/15/17/19px。源码 grep 非字阶字号＝0。
 2. **8pt 间距**：间距值全部命中合法 scale（4/8/12/16/20/24/32/40/48/56/64/80/96/120），除 4px 外须为 8 的倍数。
 3. **按钮五态**：新增/改动的按钮具备默认/悬停/按下/禁用/加载中五态样式；一屏只许一个主要按钮；直角统一。
-4. **焦点环全覆盖**：所有可聚焦元素 `:focus-visible` 可见（2px teal＋2px 偏移）；键盘 Tab 全程可达。
+4. **焦点环全覆盖**：所有可聚焦元素 `:focus-visible` 可见；键盘 Tab 全程可达。机器门禁 A4（真浏览器）检查 Tab 能否到达每个可聚焦元素、聚焦时是否有可见 outline 或 box-shadow；焦点环的颜色与粗细以 DNA 为准（`dna.css` 的 `--focus-ring`：3px `#FF4713`，偏移 2px），由人工核对。
 5. **count-up 归零**：源码搜 `countUp|animate-number`＝0。数字展示用静态值，永禁数字滚动动画。
 
 ---

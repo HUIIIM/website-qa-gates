@@ -1,4 +1,19 @@
-# CI lint 依赖：版本＋哈希锁定（SOTA SEC-A5），pip install --require-hashes 安装。
-# 哈希为 ubuntu-latest（manylinux x86_64）wheel；升级时同时更新版本与哈希。
+# CI 开发依赖：版本＋哈希锁定（SOTA SEC-A5），pip install --require-hashes 安装。
+# 哈希覆盖 ubuntu-latest（cp312 manylinux x86_64）可选中的全部 wheel；升级时同时更新版本与哈希。
+# ruff：阻断式 lint（VER-1）；mypy 及其依赖：阻断式类型检查（VER-1）。
 ruff==0.17.0 \
     --hash=sha256:bc73e7c133e82d55b5f15897b2a442d72c0cb4a0c886c46801ce3c247150b60c
+ast-serialize==0.13.1 \
+    --hash=sha256:121e1d08d58b75c15491cc3003609cbad71ac2b0016043c36d30a6b2032b6605 \
+    --hash=sha256:9f99786e0d62082a5b121b3437f3167562133711df22128de1e9886f57f0b226
+librt==0.16.0 \
+    --hash=sha256:36e53948e99bbe3ffea257124cfcae1cfb01831555c9a9c903c9f9a72db7fd07
+mypy==2.4.0 \
+    --hash=sha256:29eb0b9427a6b11b992e452f6cceb8af724f4dceb47e779d0b35e405e996ea5e \
+    --hash=sha256:d01c5d26a352acc6d5cf3128225477e1e8465e8d3029d4c345807fbf7f3cf093
+mypy-extensions==1.1.0 \
+    --hash=sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505
+pathspec==1.1.1 \
+    --hash=sha256:a00ce642f577bf7f473932318056212bc4f8bfdf53128c78bbd5af0b9b20b189
+typing-extensions==4.16.0 \
+    --hash=sha256:481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8

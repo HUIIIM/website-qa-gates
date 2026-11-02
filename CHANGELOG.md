@@ -1,7 +1,7 @@
 # 更新日志 / Changelog
 
 本文件记录本仓库的所有重要变更，格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
-版本号以 `SKILL.md` frontmatter 的 `version` 为准。条目整理自 `git log`；仓库目前没有 git tag。
+版本号以 `SKILL.md` frontmatter 的 `version` 为准。条目整理自 `git log`；仓库目前没有 git tag（合并后由维护者打 tag）。
 
 All notable changes to this repository are documented here. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 The version number follows the `version` field in `SKILL.md`. Entries are derived from `git log`; the repo has no git tags yet.
@@ -11,6 +11,47 @@ The version number follows the `version` field in `SKILL.md`. Entries are derive
 > `SKILL.md` also lists v1.1.0 – v1.3.0 gate changes; those versions have no separate commits in git history.
 
 ## [Unreleased]
+
+## [1.5.0] - 2026-11-02
+
+依据 2026-10-28 SOTA 评分卡（issue #12）逐项修复；下面"本轮"标注的是这一轮，其余条目是 1.4.0 以后已合并、此前未发版的改动。
+Fixes from the 2026-10-28 SOTA scorecard (issue #12); items marked "本轮 / this round" are new, the rest were merged after 1.4.0 and never released.
+
+### 新增 / Added（本轮 / this round）
+- 真浏览器门禁 `tools/browser/gates.cjs`（Playwright 1.63.0 Chromium＋axe-core 4.14.0，`package-lock.json` 锁版本与完整性哈希）：
+  G2 触控目标、G3 390px 零横向截断、G9 生产 CSP 下渲染、A4 键盘可达与焦点环、M4 减少动态效果、T5 CTA 单行，
+  新增 G16 axe WCAG 2.2 AA（浅色＋深色）；M1 自动截取关动效截图（结论仍待人工）/
+  real-browser gates for G2, G3, G9, A4, M4, T5 and the new G16 (axe WCAG 2.2 AA, light and dark); M1 screenshots.
+- G5 中英镜像机械项（数字、标题层级、链接、图片一致，英文版无全角标点）/ G5 mechanical zh/en mirror check.
+- `tools/score.py`：11 维度加权评分、等级、立案记录（权重与阈值读自 `scorecard-v1.yaml`）/ scoring, grade and filing in code.
+- `tools/ledger-verify.py` 与台账哈希链（runs / dispositions / scores）/ ledger hash chain and verifier.
+- `qa-gates.config.json`＋`QA_GATES_CONFIG`：阈值、站点地址、站点专属敏感规则、设计规则排除项 / gate configuration file.
+- `tools/trace-matrix.py` 与 `docs/TRACEABILITY.md`：每个机器门禁都有 pass 与 fail 用例 / gate-to-test traceability.
+- `--lang en`、`QA_GATES_LANG`：英文输出；台账门禁带 `name_en` / English output.
+- `SECURITY.md`、`THIRD_PARTY_NOTICES.md`、`evals/injection-01.md`、`evals/smoke-08.md`、`mypy.ini`。
+- CI：mypy（哈希锁定）、追溯矩阵检查、浏览器门禁（`QA_GATES_REQUIRE_BROWSER=1`）、证据存档、dna-drift /
+  CI adds mypy, traceability, browser gates, an evidence artifact and the dna-drift job.
+
+### 变更 / Changed（本轮 / this round）
+- **处置需要两个人**：`ledger-dispose.py` 必填 `--by`；关闭只能在复验时，且需不同于执行人的 `--reviewer`。
+  处置追加进台账 `dispositions`，不再改写原 run / closing an interception needs a second person; dispositions no longer rewrite runs.
+- G4：任一文件超单文件红线、或单页（HTML＋站内资源）合计超 1.5MB 即 FAIL，不再只称 `index.html`/`en.html` / per-file and per-page budgets.
+- G1/G4 外部脚本以 `bash <脚本> <站点根目录>` 调用 / external gate scripts now receive the site root.
+- G1 fallback 去掉写死的 `2027-02` 规则，改由配置 `secret_scan.extra_patterns` 传入（vertciti 自用配置保留）/
+  the site-specific date rule moved to configuration.
+- G8 缺省不再请求 vertciti.com：取 `--site-url`、`QA_GATES_SITE_URL` 或配置 `site_url`，都没有则记 waived / no hard-coded URL.
+- `dna.css` 与 `fonts/` 移到 `demo/www/`，demo 页正常引用；它违反本仓库 A1/A2/G12-1 的地方由配置排除并写进证据，不再靠放在扫描范围外 /
+  the DNA stylesheet now lives in the demo site and is excluded by configuration, with the exclusion stated in evidence.
+- A2 合法间距加入 `0`；A1/A5/G12-4 也扫 `.css`/`.js`；T1 逐页判定；T2 只看可见文字 / gate scope fixes.
+- `demo/run.sh` 用临时目录并在退出时删除，不再在 `/tmp` 留台账副本；`eval.sh` 同时校验哈希链 / demo cleans up after itself.
+- 门禁检查表、评分卡里指向不存在脚本或本机路径的引用改为仓库内真实实现 / dangling references removed.
+- `references/coverage-ledger.schema.json` 改为描述真实台账结构，并由测试核对 / ledger schema matches the real ledger.
+
+### 修复 / Fixed（本轮 / this round）
+- 门禁执行抛异常（如站点里有坏符号链接）判 fail，不再记 waived 而放行发布 / a crashing gate now fails instead of being waived.
+- G15 漏检 `srcset`、无引号属性、CSS `url()`（含站内 `.css` 文件）与越出站点根目录的引用 / G15 false passes.
+- G7 不再把 JSON-LD 等数据块当作内联脚本；改为解析 CSP 的 `script-src`，支持 `_headers` / G7 false failures.
+- A2 正则不再跨 HTML 标签读到后面的 `width` 值 / A2 no longer reads across tags.
 
 ### 新增 / Added
 - `docs/PRODUCT.md` 产品一页纸 / product one-pager.
@@ -32,6 +73,7 @@ The version number follows the `version` field in `SKILL.md`. Entries are derive
   demo pages link the DNA stylesheet; the demo link is a black `dna-btn`; 16px body gutter.
   `dna.css` 放在 `demo/www` 之外，避免门禁 runner 把它当作被测站点 CSS 扫描 /
   kept outside `demo/www` so the gate runner does not scan it as site CSS.
+  （本轮已撤销：这样做等于让 demo 绕开自家门禁，见上方"变更"/ reverted this round: it hid the stylesheet from the gates.）
 - `qa-gates.yml`：最小权限 `contents: read`、`timeout-minutes`，actions 升级到 `@v7` /
   least-privilege permissions, job timeout, actions bumped to `@v7`.
 

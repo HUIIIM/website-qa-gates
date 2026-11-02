@@ -11,13 +11,15 @@ data-room-gate.sh。规则是外部脚本的子集：绝密红线/私钥块/
 精确排除：--allowlist 文件（缺省为 <root>/.publish-allowlist，存在才用），
 每行一个子串（# 开头为注释）；命中行包含其中任一子串即不计。allowlist 文件本身不扫。
 
-用法: python3 secret-scan.py --root <站点根目录> [--allowlist FILE]
+额外规则：--pattern "名称=正则"（可重复）。runner 从配置 secret_scan.extra_patterns 传入，
+站点专属规则（如某个内部日期章）不写死在这里。
+
+用法: python3 secret-scan.py --root <站点根目录> [--allowlist FILE] [--pattern NAME=REGEX ...]
 退出码: 0=无命中(PASS), 1=有命中(FAIL), 2=用法错误
 """
 import argparse, os, re, sys
 
 PATTERNS = [
-    ("2027-02", re.compile(r"2027-0?2")),
     # 密级标识：中文直接匹配；英文只认大写标识（避免 "secret sauce" 这类误报）
     ("绝密字样", re.compile(r"绝密|机密|\bTOP ?SECRET\b|\bSECRET\b|\bCONFIDENTIAL\b")),
     ("私钥块", re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----")),
@@ -48,7 +50,8 @@ def load_allowlist(path):
         return [ln.rstrip("\n") for ln in f if ln.strip() and not ln.lstrip().startswith("#")]
 
 
-def scan(root, allow=(), allow_path=None):
+def scan(root, allow=(), allow_path=None, patterns=None):
+    patterns = PATTERNS if patterns is None else patterns
     hits, skipped = [], []
     skip_abs = os.path.abspath(allow_path) if allow_path else None
     for dirpath, dirnames, files in os.walk(root):
@@ -67,7 +70,7 @@ def scan(root, allow=(), allow_path=None):
                     for i, line in enumerate(f, 1):
                         if any(a in line for a in allow):
                             continue
-                        for name, rx in PATTERNS:
+                        for name, rx in patterns:
                             if rx.search(line):
                                 hits.append((os.path.relpath(p, root), i, name))
                                 break  # 一行只记一次
@@ -80,12 +83,24 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", required=True)
     ap.add_argument("--allowlist", default=None)
+    ap.add_argument("--pattern", action="append", default=[], help="额外规则 NAME=REGEX，可重复")
     a = ap.parse_args()
+    patterns = list(PATTERNS)
+    for spec in a.pattern:
+        name, sep, rx = spec.partition("=")
+        if not sep or not rx:
+            print(f"GATE FAIL: --pattern 需要 NAME=REGEX 形式：{spec!r}")
+            return 2
+        try:
+            patterns.append((name, re.compile(rx)))
+        except re.error as e:
+            print(f"GATE FAIL: --pattern {name!r} 正则无效：{e}")
+            return 2
     if not os.path.isdir(a.root):
         print(f"GATE FAIL: 目录不存在 {a.root}")
         return 2
     allow_path = a.allowlist or os.path.join(a.root, ALLOWLIST_NAME)
-    hits, skipped = scan(a.root, load_allowlist(allow_path), allow_path)
+    hits, skipped = scan(a.root, load_allowlist(allow_path), allow_path, patterns)
     for s in skipped[:5]:
         print(f"GATE WARN: 超过 5MB 未扫：{s}")
     if hits:
