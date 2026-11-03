@@ -9,8 +9,5 @@
     {"name": "2027-02 内部日期章", "regex": "2027-0?2"}
   ]},
   "csp_sources": ["vercel.json", "_headers"],
-  "design_rules": {"exclude": [
-    {"path": "dna.css",
-     "reason": "vendored from HUIIIM/.github design/dist/dna.css (dna-drift 校验不得手改)；已知偏差 transition background/color/width、间距 2/10/14/18/28/72px 须在上游修"}
-  ]}
+  "design_rules": {"exclude": []}
 }
