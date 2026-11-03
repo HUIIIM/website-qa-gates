@@ -1,1 +1,99 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","description":"website-qa-gates 每个门禁的覆盖证据进运行记录，多轮 additive","properties":{"additive":{"const":true,"description":"多轮只追加不覆盖","type":"boolean"},"evidence":{"items":{"properties":{"ref":{"description":"证据引用：文件路径/命令/截图","type":"string"},"type":{"type":"string"}},"required":["type","ref"],"type":"object"},"type":"array"},"gate_id":{"description":"门禁 id，如 qa-gate-g3-csp","type":"string"},"run_at":{"format":"date-time","type":"string"},"verdict":{"enum":["pass","fail","waived"],"type":"string"}},"required":["gate_id","run_at","evidence","verdict"],"title":"coverage-ledger (H4)","type":"object"}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "coverage-ledger (H4)",
+  "description": "website-qa-gates 运行台账：只追加，runs / dispositions / scores 三类记录共用一条哈希链（tools/ledger_io.py）。tests/test_gates.py 用本文件的 required 列表核对 runner 实际写出的台账。",
+  "type": "object",
+  "required": ["additive", "runs"],
+  "properties": {
+    "additive": {"const": true, "description": "只追加不覆盖；不是 true 时 runner 拒绝写入"},
+    "head": {"type": "string", "pattern": "^[0-9a-f]{64}$", "description": "最后一条封印记录的 sha256（外部锚定用）"},
+    "runs": {"type": "array", "items": {"$ref": "#/definitions/run"}},
+    "dispositions": {"type": "array", "items": {"$ref": "#/definitions/disposition"}},
+    "scores": {"type": "array", "items": {"$ref": "#/definitions/score"}}
+  },
+  "definitions": {
+    "seal": {
+      "type": "object",
+      "required": ["seq", "prev_sha256", "sha256"],
+      "properties": {
+        "seq": {"type": "integer", "minimum": 1},
+        "prev_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$", "description": "去掉 sha256 字段后的规范 JSON（sort_keys、紧凑分隔符、UTF-8）的 SHA-256"}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["type", "ref"],
+      "properties": {
+        "type": {"enum": ["cmd", "output", "note", "artifact", "interception", "backcheck"]},
+        "ref": {"type": "string"}
+      }
+    },
+    "gate": {
+      "type": "object",
+      "required": ["gate_id", "name", "name_en", "run_at", "verdict", "evidence"],
+      "properties": {
+        "gate_id": {"type": "string"},
+        "name": {"type": "string"},
+        "name_en": {"type": "string"},
+        "run_at": {"type": "string", "format": "date-time"},
+        "verdict": {"enum": ["pass", "fail", "waived"]},
+        "evidence": {"type": "array", "items": {"$ref": "#/definitions/evidence"}}
+      }
+    },
+    "interception": {
+      "type": "object",
+      "required": ["gate_id", "name", "evidence_refs", "status"],
+      "properties": {
+        "gate_id": {"type": "string"},
+        "name": {"type": "string"},
+        "evidence_refs": {"type": "array", "items": {"type": "string"}},
+        "status": {"enum": ["pending"], "description": "创建时状态；当前状态以 dispositions 里该拦截项最近一条 result 为准"}
+      }
+    },
+    "run": {
+      "allOf": [{"$ref": "#/definitions/seal"}],
+      "type": "object",
+      "required": ["run_id", "run_at", "change", "site_root", "site_url", "config", "gates", "interceptions", "machine_coverage", "summary"],
+      "properties": {
+        "run_id": {"type": "string"},
+        "run_at": {"type": "string", "format": "date-time"},
+        "change": {"type": "string"},
+        "site_root": {"type": "string"},
+        "site_url": {"type": ["string", "null"]},
+        "config": {"type": "string"},
+        "evidence_dir": {"type": ["string", "null"]},
+        "gates": {"type": "array", "items": {"$ref": "#/definitions/gate"}},
+        "interceptions": {"type": "array", "items": {"$ref": "#/definitions/interception"}},
+        "machine_coverage": {"type": "string"},
+        "summary": {"type": "object", "required": ["pass", "fail", "waived"]}
+      }
+    },
+    "disposition": {
+      "allOf": [{"$ref": "#/definitions/seal"}],
+      "type": "object",
+      "required": ["run_id", "gate_id", "at", "action", "result", "by", "note"],
+      "properties": {
+        "run_id": {"type": "string"},
+        "gate_id": {"type": "string"},
+        "at": {"type": "string", "format": "date-time"},
+        "action": {"enum": ["立案", "整改", "复验"]},
+        "result": {"enum": ["open", "closed"]},
+        "by": {"type": "string", "minLength": 1},
+        "reviewer": {"type": "string", "description": "result=closed 时必填且不同于 by"},
+        "note": {"type": "string"}
+      }
+    },
+    "score": {
+      "allOf": [{"$ref": "#/definitions/seal"}],
+      "type": "object",
+      "required": ["scorecard_version", "total", "grade", "applicable_weight", "dimensions", "filings", "at"],
+      "properties": {
+        "run_id": {"type": ["string", "null"]},
+        "total": {"type": "number"},
+        "grade": {"type": "string"},
+        "filings": {"type": "array"}
+      }
+    }
+  }
+}

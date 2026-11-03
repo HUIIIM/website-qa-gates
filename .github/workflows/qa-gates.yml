@@ -1,5 +1,5 @@
-# website-qa-gates 自家 CI dogfood（P0-2，2026-10-10）
-# 每次 PR 与 main push 跑 lint＋单元测试＋demo 门禁＋eval 断言：任一失败即红。
+# website-qa-gates 自家 CI dogfood（P0-2，2026-10-10；2026-11 扩展）
+# 每次 PR 与 main push 跑：ruff＋mypy（阻断）→ 追溯矩阵 → 单元测试（含真浏览器门禁）→ demo 门禁＋eval → 证据存档。
 # 一个"发布门禁"项目没有自己的门禁是公信力硬伤——push 即跑，红了就修。
 name: qa-gates-dogfood
 
@@ -14,18 +14,49 @@ jobs:
   gates:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      QA_GATES_REQUIRE_BROWSER: "1"   # 浏览器门禁在 CI 里不可用 = fail，不是跳过
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: "22"
+      - name: 安装开发依赖（版本＋哈希锁定）
+        run: python -m pip install --require-hashes --no-deps -r requirements-dev.txt
       - name: lint（ruff，阻断式）
+        run: ruff check tools tests
+      - name: 类型检查（mypy，阻断式）
+        run: python -m mypy
+      - name: 追溯矩阵（每个机器门禁都有正反用例，且 docs/TRACEABILITY.md 未过期）
+        run: python tools/trace-matrix.py --check
+      - name: 安装浏览器门禁依赖（npm ci 按 package-lock 完整性哈希）
+        working-directory: tools/browser
         run: |
-          python -m pip install --require-hashes --no-deps -r requirements-dev.txt
-          ruff check tools tests
-      - name: 单元测试（门禁 runner 回归）
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: 单元测试（门禁 runner、台账、评分、浏览器门禁）
         run: python -m unittest discover -s tests -v
       - name: 运行门禁（demo 真实跑通）
+        env:
+          QA_GATES_EVIDENCE_DIR: ${{ runner.temp }}/qa-evidence
         run: bash demo/run.sh
-      - name: eval 断言（记账＋零 FAIL）
+      - name: eval 断言（记账＋零 FAIL＋哈希链）
         run: bash demo/eval.sh
+      - name: 证据存档（截图、axe 结果）
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: qa-evidence
+          path: ${{ runner.temp }}/qa-evidence
+          if-no-files-found: warn
+          retention-days: 90
+
+  dna:
+    # vendored DNA 不能悄悄偏离上游（STANDARDS UI-2）
+    uses: HUIIIM/.github/.github/workflows/dna-drift.yml@34c36533c87a1d3727d564454627d50bdd39f960 # main 2026-11
+    with:
+      vendored: demo/www/dna.css
+      flavor: dna.css

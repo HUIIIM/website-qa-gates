@@ -1,0 +1,10 @@
+{
+  "name": "website-qa-gates-browser",
+  "private": true,
+  "description": "Real-browser gates for website-qa-gates (Playwright + axe-core). Installed with `npm ci`; versions are exact and locked with integrity hashes.",
+  "license": "MIT",
+  "dependencies": {
+    "axe-core": "4.14.0",
+    "playwright": "1.63.0"
+  }
+}
