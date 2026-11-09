@@ -1,0 +1,60 @@
+[
+ {
+  "id": "runner-broken-symlink-fails-closed",
+  "origin": "real: 2026-10-28 SOTA 评分卡 R1（66115ea 上坏符号链接让真实 FAIL 变 exit 0）",
+  "patch": {
+   "old.html": {
+    "symlink": "/nonexistent/target"
+   }
+  },
+  "expect": {
+   "A1": "fail",
+   "T2": "fail",
+   "G15": "fail",
+   "G12-1": "fail"
+  }
+ },
+ {
+  "id": "V4-open-interception",
+  "origin": "synthetic",
+  "prior_runs": [
+   {
+    "run_id": "r1",
+    "interceptions": [
+     {
+      "gate_id": "A1",
+      "status": "pending"
+     }
+    ]
+   }
+  ],
+  "expect": {
+   "V4": "fail"
+  }
+ },
+ {
+  "id": "V4-closed-interception",
+  "origin": "synthetic",
+  "prior_runs": [
+   {
+    "run_id": "r1",
+    "interceptions": [
+     {
+      "gate_id": "A1",
+      "status": "pending"
+     }
+    ]
+   }
+  ],
+  "dispositions": [
+   {
+    "run_id": "r1",
+    "gate_id": "A1",
+    "result": "closed"
+   }
+  ],
+  "expect": {
+   "V4": "pass"
+  }
+ }
+]

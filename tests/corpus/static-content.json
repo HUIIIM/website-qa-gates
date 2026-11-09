@@ -1,0 +1,171 @@
+[
+ {
+  "id": "G1-token-dotenv",
+  "origin": "real: 2026-10-25 独立评估（a4e8cc8 上的假 PASS）",
+  "patch": {
+   ".env": {
+    "write": "TOKEN={FAKE_GH}\n"
+   }
+  },
+  "expect": {
+   "G1": "fail"
+  }
+ },
+ {
+  "id": "G1-classification",
+  "origin": "synthetic",
+  "both": "<p>TOP SECRET</p>",
+  "expect": {
+   "G1": "fail"
+  }
+ },
+ {
+  "id": "G1-secret-sauce-no-fp",
+  "origin": "real: 2026-10-25 独立评估（a4e8cc8 上的假 PASS）",
+  "both": "<p>Our secret sauce</p>",
+  "expect": {
+   "G1": "pass"
+  }
+ },
+ {
+  "id": "G4-big-image",
+  "origin": "real: 2026-10-28 SOTA 评分卡 R7（G4 放过大图）",
+  "patch": {
+   "hero.jpg": {
+    "bytes": 2000000
+   }
+  },
+  "both": "<img src=\"hero.jpg\" alt=\"h\">",
+  "expect": {
+   "G4": "fail"
+  }
+ },
+ {
+  "id": "G4-page-total",
+  "origin": "synthetic",
+  "patch": {
+   "a.jpg": {
+    "bytes": 900000
+   },
+   "b.jpg": {
+    "bytes": 900000
+   }
+  },
+  "both": "<img src=\"a.jpg\" alt=\"a\"><img src=\"b.jpg\" alt=\"b\">",
+  "expect": {
+   "G4": "fail"
+  }
+ },
+ {
+  "id": "G4-missing-page",
+  "origin": "synthetic",
+  "patch": {
+   "en.html": {
+    "delete": true
+   }
+  },
+  "expect": {
+   "G4": "fail"
+  }
+ },
+ {
+  "id": "G5-number-drift",
+  "origin": "synthetic",
+  "patch": {
+   "index.html": {
+    "append": "<p>309 项</p>"
+   },
+   "en.html": {
+    "append": "<p>308 checks</p>"
+   }
+  },
+  "expect": {
+   "G5": "fail"
+  }
+ },
+ {
+  "id": "G5-fullwidth-en",
+  "origin": "synthetic",
+  "patch": {
+   "index.html": {
+    "append": "<p>好</p>"
+   },
+   "en.html": {
+    "append": "<p>Hello，world</p>"
+   }
+  },
+  "expect": {
+   "G5": "fail"
+  }
+ },
+ {
+  "id": "G5-mirror-ok",
+  "origin": "synthetic",
+  "patch": {
+   "index.html": {
+    "append": "<p>309 项</p>"
+   },
+   "en.html": {
+    "append": "<p>309 checks</p>"
+   }
+  },
+  "expect": {
+   "G5": "pass"
+  }
+ },
+ {
+  "id": "G7-json-ld-no-fp",
+  "origin": "real: 2026-10-28 SOTA 评分卡 R6（G7 把 JSON-LD 当脚本误报）",
+  "patch": {
+   "vercel.json": {
+    "write": "{\"headers\": [{\"source\": \"/(.*)\", \"headers\": [{\"key\": \"Content-Security-Policy\", \"value\": \"default-src 'self'; script-src 'self'\"}]}]}"
+   }
+  },
+  "both": "<script type=\"application/ld+json\">{\"@context\":\"https://schema.org\"}</script>",
+  "expect": {
+   "G7": "pass"
+  }
+ },
+ {
+  "id": "G7-unhashed-inline",
+  "origin": "synthetic",
+  "patch": {
+   "vercel.json": {
+    "write": "{\"headers\": [{\"source\": \"/(.*)\", \"headers\": [{\"key\": \"Content-Security-Policy\", \"value\": \"default-src 'self'; script-src 'self'\"}]}]}"
+   }
+  },
+  "both": "<script>console.log(1)</script>",
+  "expect": {
+   "G7": "fail"
+  }
+ },
+ {
+  "id": "G7-headers-file",
+  "origin": "synthetic",
+  "patch": {
+   "_headers": {
+    "write": "/*\n  Content-Security-Policy: script-src 'self'\n"
+   }
+  },
+  "both": "<script>console.log(2)</script>",
+  "expect": {
+   "G7": "fail"
+  }
+ },
+ {
+  "id": "G8-unreachable",
+  "origin": "synthetic",
+  "site_url": "unreachable",
+  "expect": {
+   "G8": "fail"
+  }
+ },
+ {
+  "id": "G8-reachable",
+  "origin": "synthetic",
+  "site_url": "local",
+  "expect": {
+   "G8": "pass"
+  }
+ }
+]
