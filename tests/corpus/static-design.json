@@ -1,0 +1,114 @@
+[
+ {
+  "id": "A1-font-13",
+  "origin": "synthetic",
+  "both": "<p style=\"font-size:13px\">x</p>",
+  "expect": {
+   "A1": "fail"
+  }
+ },
+ {
+  "id": "A1-font-in-css",
+  "origin": "synthetic",
+  "patch": {
+   "site.css": {
+    "write": "p{font-size:15px}"
+   }
+  },
+  "expect": {
+   "A1": "fail"
+  }
+ },
+ {
+  "id": "A2-margin-13",
+  "origin": "synthetic",
+  "both": "<div style=\"margin:13px\">x</div>",
+  "expect": {
+   "A2": "fail"
+  }
+ },
+ {
+  "id": "A2-no-cross-tag-fp",
+  "origin": "real: 2026-11-02 本仓 b1 复测（A2 正则跨标签读到 width:600px）",
+  "both": "<div style=\"padding:8px\">x</div><div style=\"width:600px\">y</div>",
+  "expect": {
+   "A2": "pass"
+  }
+ },
+ {
+  "id": "A5-countup-js",
+  "origin": "synthetic",
+  "patch": {
+   "app.js": {
+    "write": "new CountUp('n', 309).start();"
+   }
+  },
+  "expect": {
+   "A5": "fail"
+  }
+ },
+ {
+  "id": "T1-eyebrows",
+  "origin": "synthetic",
+  "both": "<section><p class=\"eyebrow\">a</p><p class=\"eyebrow\">b</p></section>",
+  "expect": {
+   "T1": "fail"
+  }
+ },
+ {
+  "id": "T2-em-dash",
+  "origin": "real: CHANGELOG 2026-10-10 红测（em-dash 注入使 CI 变红）",
+  "both": "<p>一句话—真的</p>",
+  "expect": {
+   "T2": "fail"
+  }
+ },
+ {
+  "id": "T2-em-dash-in-script-no-fp",
+  "origin": "synthetic",
+  "both": "<script>var s='—';</script>",
+  "expect": {
+   "T2": "pass"
+  }
+ },
+ {
+  "id": "G12-1-mixed-transition",
+  "origin": "real: 2026-10-25 独立评估（a4e8cc8 上的假 PASS）",
+  "both": "<style>.a{transition: color .2s, transform .2s}</style>",
+  "expect": {
+   "G12-1": "fail"
+  }
+ },
+ {
+  "id": "G12-1-keyframes-width",
+  "origin": "synthetic",
+  "both": "<style>@keyframes g{from{width:0}to{width:9px}}</style>",
+  "expect": {
+   "G12-1": "fail"
+  }
+ },
+ {
+  "id": "G12-1-after-40-decls",
+  "origin": "real: 2026-10-25 独立评估（a4e8cc8 上的假 PASS）",
+  "both": "<style>.k0{transition: opacity .1s}.k1{transition: opacity .1s}.k2{transition: opacity .1s}.k3{transition: opacity .1s}.k4{transition: opacity .1s}.k5{transition: opacity .1s}.k6{transition: opacity .1s}.k7{transition: opacity .1s}.k8{transition: opacity .1s}.k9{transition: opacity .1s}.k10{transition: opacity .1s}.k11{transition: opacity .1s}.k12{transition: opacity .1s}.k13{transition: opacity .1s}.k14{transition: opacity .1s}.k15{transition: opacity .1s}.k16{transition: opacity .1s}.k17{transition: opacity .1s}.k18{transition: opacity .1s}.k19{transition: opacity .1s}.k20{transition: opacity .1s}.k21{transition: opacity .1s}.k22{transition: opacity .1s}.k23{transition: opacity .1s}.k24{transition: opacity .1s}.k25{transition: opacity .1s}.k26{transition: opacity .1s}.k27{transition: opacity .1s}.k28{transition: opacity .1s}.k29{transition: opacity .1s}.k30{transition: opacity .1s}.k31{transition: opacity .1s}.k32{transition: opacity .1s}.k33{transition: opacity .1s}.k34{transition: opacity .1s}.k35{transition: opacity .1s}.k36{transition: opacity .1s}.k37{transition: opacity .1s}.k38{transition: opacity .1s}.k39{transition: opacity .1s}.k40{transition: opacity .1s}.k41{transition: opacity .1s}.k42{transition: opacity .1s}.k43{transition: opacity .1s}.k44{transition: opacity .1s}.z{transition: width .2s}</style>",
+  "expect": {
+   "G12-1": "fail"
+  }
+ },
+ {
+  "id": "G12-1-whitelist-ok",
+  "origin": "synthetic",
+  "both": "<style>.c{transition: transform 150ms, opacity 70ms}</style>",
+  "expect": {
+   "G12-1": "pass"
+  }
+ },
+ {
+  "id": "G12-4-confetti",
+  "origin": "synthetic",
+  "both": "<script src=\"https://cdn.example/confetti.browser.min.js\"></script>",
+  "expect": {
+   "G12-4": "fail"
+  }
+ }
+]
