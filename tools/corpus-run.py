@@ -128,7 +128,7 @@ def evaluate(lr, cases, use_browser=True):
 
 
 def report(rows, machine):
-    per = {}
+    per: dict[str, dict] = {}
     for c, gid, want, got in rows:
         s = per.setdefault(gid, {"fail_cases": 0, "caught": 0, "pass_cases": 0, "clean": 0, "skipped": 0,
                                  "real": 0, "misses": []})
@@ -152,7 +152,7 @@ def report(rows, machine):
              "| 门禁 | 拦截 caught/fail 用例 | 其中真实缺陷 | 无误报 clean/pass 用例 | 跳过 | 漏检或误报 |",
              "|---|---|---|---|---|---|"]
     for gid in machine:
-        s = per.get(gid)
+        s = per.get(gid) or {}
         if not s:
             lines.append(f"| {gid} | 0/0 | 0 | 0/0 | 0 | **无用例** |")
             continue
