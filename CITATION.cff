@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Miao"
+    given-names: "Jiahui"
+title: "website-qa-gates"
+url: "https://github.com/HUIIIM/website-qa-gates"
