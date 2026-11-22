@@ -95,8 +95,10 @@ evals/                   dry-run records smoke-01 to smoke-08, injection-01
 - Most gates have fired only on defects injected by tests, so they are labelled hypotheses; see "Gate evidence
   status" in the checklist.
 - Performance is measured as bytes (G4), not as LCP, CLS or INP on a real device.
-- The vendored `dna.css` breaks this repository's own A1, A2 and G12-1 rules. It is excluded from those gates by
-  `qa-gates.config.json`, and every run says so in its evidence. The fix belongs upstream in HUIIIM/.github.
+- The vendored `dna.css` is excluded from the A1, A2 and G12-1 gates by `qa-gates.config.json`, and every run
+  says so in its evidence. Upstream fixed the deviations the exclusion was recorded for (contrast, transition
+  properties, spacing scale) in DNA v4.1.2, so the file now passes those gates unexcluded as well; the
+  exclusion remains as a disclosed guard for the vendored copy.
 - The run ledger is a local file. Nothing anchors its head outside the machine automatically; do that by hand
   (for example in the release PR description).
 - The agent-level prompt-injection evaluation (`evals/injection-01.md`) has not been run yet.

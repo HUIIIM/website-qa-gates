@@ -89,8 +89,9 @@ evals/                   dry-run 记录 smoke-01 至 smoke-08、injection-01
   只能发现一部分 WCAG 问题；G5 比对数字与结构，不比对语义。
 - 多数门禁只在测试注入的缺陷上触发过，按规则标为"假设"，见检查表「门禁验证状态」。
 - 性能按字节（G4）衡量，不是真机 LCP、CLS、INP。
-- vendored `dna.css` 违反本仓库自己的 A1、A2、G12-1。它由 `qa-gates.config.json` 排除，每次运行的证据都会写明；
-  应在上游 HUIIIM/.github 修。
+- vendored `dna.css` 由 `qa-gates.config.json` 从 A1、A2、G12-1 排除，每次运行的证据都会写明；排除理由所列
+  偏差（对比度、transition 属性、间距标度）已由上游在 DNA v4.1.2 修毕，该文件现不排除亦过三门，排除保留为
+  vendored 守卫＋留痕。
 - 运行台账是本地文件，链头不会自动锚定到机器之外，要手工完成（例如写进发布 PR 描述）。
 - agent 层面的提示注入评测（`evals/injection-01.md`）尚未执行。
 
