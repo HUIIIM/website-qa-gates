@@ -324,11 +324,14 @@ class TestDesignRules(SiteCase):
         self.assertEqual(self.gate(lr.ck_g124), "fail")
 
     def test_vendored_dna_is_excluded_and_disclosed(self):
-        """[A2:fail][G12-1:fail][A2:pass]"""
+        """[A2:pass][G12-1:pass][A2:pass]"""
         _, ev = lr.ck_a2(self.root, None, {})
         self.assertIn("dna.css", ev[-1]["ref"])  # 排除项写进证据
-        self.assertEqual(self.gate(lr.ck_a2, ctx=DEFAULTS_ONLY), "fail")  # 不排除时，DNA 过不了自家门禁
-        self.assertEqual(self.gate(lr.ck_g121, ctx=DEFAULTS_ONLY), "fail")
+        # v4.0.0 时 vendored DNA 不排除则 A2/G12-1 皆不过；上游 DNA v4.1.2 已按排除理由
+        # 所列偏差（对比度、transition 属性、间距标度）逐项修毕，两门不排除亦过。
+        # 排除项保留为 vendored 守卫＋留痕，本测试守「排除必披露」一环。
+        self.assertEqual(self.gate(lr.ck_a2, ctx=DEFAULTS_ONLY), "pass")
+        self.assertEqual(self.gate(lr.ck_g121, ctx=DEFAULTS_ONLY), "pass")
 
     def test_exclusion_requires_reason(self):
         """[config:validation]"""
