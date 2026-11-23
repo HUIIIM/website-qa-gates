@@ -1,0 +1,92 @@
+[
+ {
+  "id": "browser-clean-demo",
+  "origin": "synthetic",
+  "expect": {
+   "G2": "pass",
+   "G3": "pass",
+   "G9": "pass",
+   "A4": "pass",
+   "M4": "pass",
+   "T5": "pass",
+   "G16": "pass"
+  }
+ },
+ {
+  "id": "G2-tiny-button",
+  "origin": "synthetic",
+  "both": "<button style=\"width:20px;height:20px;padding:0\">x</button>",
+  "expect": {
+   "G2": "fail"
+  }
+ },
+ {
+  "id": "G3-wide-block",
+  "origin": "synthetic",
+  "both": "<div style=\"width:600px\">wide</div>",
+  "expect": {
+   "G3": "fail"
+  }
+ },
+ {
+  "id": "G3-clipped-by-overflow-hidden",
+  "origin": "synthetic",
+  "both": "<div style=\"overflow-x:hidden\"><div style=\"width:600px\">clipped</div></div>",
+  "expect": {
+   "G3": "fail"
+  }
+ },
+ {
+  "id": "G9-console-error",
+  "origin": "synthetic",
+  "both": "<script>console.error(\"boom\")</script>",
+  "expect": {
+   "G9": "fail"
+  }
+ },
+ {
+  "id": "G9-csp-block",
+  "origin": "synthetic",
+  "patch": {
+   "vercel.json": {
+    "write": "{\"headers\": [{\"source\": \"/(.*)\", \"headers\": [{\"key\": \"Content-Security-Policy\", \"value\": \"default-src 'self'; script-src 'self'\"}]}]}"
+   }
+  },
+  "both": "<script>document.title='x'</script>",
+  "expect": {
+   "G9": "fail"
+  }
+ },
+ {
+  "id": "A4-no-focus-ring",
+  "origin": "synthetic",
+  "both": "<button class=\"t\">x</button><style>.t:focus{outline:none!important;box-shadow:none!important}</style>",
+  "expect": {
+   "A4": "fail"
+  }
+ },
+ {
+  "id": "M4-slow-reduced-motion",
+  "origin": "synthetic",
+  "both": "<span class=\"s\">s</span><style>@media (prefers-reduced-motion: reduce){.s{transition:opacity 2s!important}}</style>",
+  "expect": {
+   "M4": "fail"
+  }
+ },
+ {
+  "id": "T5-wrapping-cta",
+  "origin": "synthetic",
+  "both": "<a class=\"dna-btn\" href=\"en.html\" style=\"width:90px;white-space:normal\">a very long call to action label</a>",
+  "expect": {
+   "T5": "fail"
+  }
+ },
+ {
+  "id": "G16-low-contrast",
+  "origin": "synthetic",
+  "both": "<p style=\"color:#ccc;background:#fff\">low contrast</p>",
+  "expect": {
+   "G16": "fail"
+  }
+ }
+]

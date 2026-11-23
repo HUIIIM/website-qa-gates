@@ -1,0 +1,70 @@
+[
+ {
+  "id": "G15-srcset",
+  "origin": "real: 2026-10-28 SOTA 评分卡 R5（66115ea 上 G15 漏检）",
+  "both": "<img srcset=\"nope-2x.png 2x\" alt=\"x\">",
+  "expect": {
+   "G15": "fail"
+  }
+ },
+ {
+  "id": "G15-unquoted-href",
+  "origin": "real: 2026-10-28 SOTA 评分卡 R5（66115ea 上 G15 漏检）",
+  "both": "<a href=missing.html>x</a>",
+  "expect": {
+   "G15": "fail"
+  }
+ },
+ {
+  "id": "G15-css-url",
+  "origin": "real: 2026-10-28 SOTA 评分卡 R5（66115ea 上 G15 漏检）",
+  "both": "<style>.b{background:url(missing.png)}</style>",
+  "expect": {
+   "G15": "fail"
+  }
+ },
+ {
+  "id": "G15-missing-image",
+  "origin": "real: PR #10 修复的 demo 页坏图 x.png 与 href=\"#\"",
+  "both": "<img src=\"x.png\" alt=\"x\">",
+  "expect": {
+   "G15": "fail"
+  }
+ },
+ {
+  "id": "G15-hash-link",
+  "origin": "real: PR #10 修复的 demo 页坏图 x.png 与 href=\"#\"",
+  "both": "<a href=\"#\">x</a>",
+  "expect": {
+   "G15": "fail"
+  }
+ },
+ {
+  "id": "G15-escapes-root",
+  "origin": "synthetic",
+  "both": "<link rel=\"stylesheet\" href=\"../../outside.css\">",
+  "expect": {
+   "G15": "fail"
+  }
+ },
+ {
+  "id": "G15-css-file-url",
+  "origin": "synthetic",
+  "patch": {
+   "dna.css": {
+    "append": ".z{background:url(img/none.png)}"
+   }
+  },
+  "expect": {
+   "G15": "fail"
+  }
+ },
+ {
+  "id": "G15-svg-fragment-no-fp",
+  "origin": "synthetic",
+  "both": "<svg><rect fill=\"url(#g)\"/></svg>",
+  "expect": {
+   "G15": "pass"
+  }
+ }
+]
