@@ -56,7 +56,7 @@ jobs:
 
   dna:
     # vendored DNA 不能悄悄偏离上游（STANDARDS UI-2）
-    uses: HUIIIM/.github/.github/workflows/dna-drift.yml@34c36533c87a1d3727d564454627d50bdd39f960 # main 2026-11
+    uses: HUIIIM/.github/.github/workflows/dna-drift.yml@12bd5df045cc8e764f056cc346a00f20797ffc84 # main 2026-11
     with:
       vendored: demo/www/dna.css
       flavor: dna.css
